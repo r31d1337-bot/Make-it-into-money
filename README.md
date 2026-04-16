@@ -26,4 +26,4 @@ Open http://localhost:3000.
 
 - `app/page.tsx` — client form, streams tokens from the API into the UI.
 - `app/api/monetize/route.ts` — server route. Calls Claude via the Anthropic SDK and pipes text deltas back as a `text/plain` stream.
-- Model: `claude-opus-4-7`. System prompt in the route file.
+- Model: `claude-sonnet-4-6`. System prompt in the route file.
