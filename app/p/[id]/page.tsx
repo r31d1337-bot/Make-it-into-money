@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
+import ToolsMenu from "@/components/ToolsMenu";
 import { loadShare } from "@/lib/store";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -36,12 +37,15 @@ export default async function SharedPlanPage({ params }: PageProps) {
       />
 
       <nav className="mb-8 flex items-center justify-between">
-        <Link
-          href="/discover"
-          className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white"
-        >
-          ← Discover
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/discover"
+            className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white"
+          >
+            ← Discover
+          </Link>
+          <ToolsMenu />
+        </div>
         <div className="flex items-center gap-2">
           <Link
             href={`/?idea=${encodeURIComponent(plan.idea)}`}

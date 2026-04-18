@@ -9,24 +9,18 @@ import ToolsMenu from "@/components/ToolsMenu";
 import { Input, Textarea } from "@/components/FormFields";
 
 type Form = {
-  name: string;
-  contact: string;
-  targetRole: string;
-  experience: string;
-  skills: string;
-  education: string;
+  jobDescription: string;
+  companyName: string;
+  background: string;
 };
 
 const EMPTY: Form = {
-  name: "",
-  contact: "",
-  targetRole: "",
-  experience: "",
-  skills: "",
-  education: "",
+  jobDescription: "",
+  companyName: "",
+  background: "",
 };
 
-export default function ResumePage() {
+export default function InterviewPrepPage() {
   const [form, setForm] = useState<Form>(EMPTY);
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,8 +33,7 @@ export default function ResumePage() {
     setForm((prev) => ({ ...prev, [key]: v }));
   }
 
-  const canSubmit =
-    !loading && (form.experience.trim().length > 0 || form.targetRole.trim().length > 0);
+  const canSubmit = !loading && form.jobDescription.trim().length > 0;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +47,7 @@ export default function ResumePage() {
     abortRef.current = controller;
 
     try {
-      const res = await fetch("/api/resume", {
+      const res = await fetch("/api/interview-prep", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -78,9 +71,7 @@ export default function ResumePage() {
         }
       }
     } catch (err) {
-      if ((err as Error).name !== "AbortError") {
-        setError((err as Error).message);
-      }
+      if ((err as Error).name !== "AbortError") setError((err as Error).message);
     } finally {
       setLoading(false);
       abortRef.current = null;
@@ -96,9 +87,7 @@ export default function ResumePage() {
       await navigator.clipboard.writeText(output);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // ignore
-    }
+    } catch {}
   }
 
   function onPrint() {
@@ -119,7 +108,6 @@ export default function ResumePage() {
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"
       />
 
-      {/* Top bar */}
       <div className="no-print mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="text-sm text-neutral-400 hover:text-white">
@@ -146,92 +134,66 @@ export default function ResumePage() {
         <>
           <header className="mb-10 no-print">
             <h1 className="bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-4xl font-semibold tracking-tight text-transparent sm:text-5xl">
-              Write my resume.
+              Interview prep.
             </h1>
             <p className="mt-3 text-lg text-neutral-400">
-              Dump your background in rough notes. Claude returns a polished, one-page,
-              ATS-friendly resume.
+              Paste the job posting. Get 8 likely questions, how to approach each, and
+              smart questions to ask them.
             </p>
           </header>
 
           <form onSubmit={onSubmit} className="space-y-5 no-print">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Input
-                label="Your name"
-                value={form.name}
-                onChange={(v) => update("name", v)}
-                placeholder="Alex Rivera"
-              />
-              <Input
-                label="Target role"
-                value={form.targetRole}
-                onChange={(v) => update("targetRole", v)}
-                placeholder="Senior Product Manager"
-              />
-            </div>
+            <Textarea
+              label="Job posting"
+              hint="Paste the full posting — the more detail, the more tailored the prep."
+              required
+              value={form.jobDescription}
+              onChange={(v) => update("jobDescription", v)}
+              rows={10}
+              placeholder="Paste the job posting here..."
+              mono={false}
+            />
 
             <Input
-              label="Contact info"
-              hint="Email, phone, city, LinkedIn — whatever you want on the resume"
-              value={form.contact}
-              onChange={(v) => update("contact", v)}
-              placeholder="alex@example.com · (555) 555-5555 · Austin, TX · linkedin.com/in/arivera"
+              label="Company (optional)"
+              hint="Helps tailor the culture / fit questions"
+              value={form.companyName}
+              onChange={(v) => update("companyName", v)}
+              placeholder="Acme"
             />
 
             <Textarea
-              label="Work experience"
-              hint="Roles, companies, dates, what you did. Bullets or paragraphs — it's fine. Include numbers if you have them."
-              required
-              value={form.experience}
-              onChange={(v) => update("experience", v)}
-              rows={10}
-              placeholder={`2021–now  Senior PM @ Acme. Led the launch of Widget 2.0, 4x'd MAU from 12k to 50k. Ran a team of 4.
-2018–2021  PM @ Globex. Shipped onboarding redesign, cut drop-off from 62% to 28%.
-...`}
+              label="Your background (optional)"
+              hint="Paste your resume, or drop key bullets. Lets the openers cite your actual wins."
+              value={form.background}
+              onChange={(v) => update("background", v)}
+              rows={8}
+              placeholder="Senior PM at Acme 2021–now, launched Widget 2.0 (4x MAU growth)..."
             />
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Textarea
-                label="Skills (optional)"
-                hint="Languages, tools, methodologies"
-                value={form.skills}
-                onChange={(v) => update("skills", v)}
-                rows={4}
-                placeholder="SQL, Figma, Amplitude, A/B testing, roadmapping"
-              />
-              <Textarea
-                label="Education (optional)"
-                value={form.education}
-                onChange={(v) => update("education", v)}
-                rows={4}
-                placeholder="BA Economics — UT Austin, 2016"
-              />
-            </div>
 
             <button
               type="submit"
               disabled={!canSubmit}
               className="rounded-lg bg-gradient-to-br from-white to-neutral-200 px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition hover:brightness-110 disabled:from-neutral-800 disabled:to-neutral-900 disabled:text-neutral-500 disabled:shadow-none"
             >
-              Write my resume →
+              Prep me →
             </button>
           </form>
         </>
       ) : (
         <>
           <header className="mb-6 no-print">
-            <h2 className="text-xs uppercase tracking-wider text-neutral-500">Your resume</h2>
-            {form.name && (
-              <p className="mt-1 text-neutral-400">
-                For {form.name}
-                {form.targetRole ? ` · targeting ${form.targetRole}` : ""}
-              </p>
+            <h2 className="text-xs uppercase tracking-wider text-neutral-500">
+              Interview prep
+            </h2>
+            {form.companyName && (
+              <p className="mt-1 text-neutral-400">For {form.companyName}</p>
             )}
           </header>
 
           <article
             ref={outputRef}
-            className="markdown resume-sheet relative rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30 sm:p-10"
+            className="markdown relative rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30 sm:p-8"
           >
             {loading && !output && (
               <div className="flex items-center gap-2 text-sm text-neutral-500">
@@ -240,7 +202,7 @@ export default function ResumePage() {
                   <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-500 [animation-delay:-0.15s]" />
                   <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-500" />
                 </span>
-                Writing...
+                Thinking...
               </div>
             )}
             <PlanMarkdown>{output}</PlanMarkdown>
@@ -294,9 +256,8 @@ export default function ResumePage() {
       )}
 
       <footer className="mt-24 text-center text-xs text-neutral-600 no-print">
-        Powered by Claude Sonnet 4.6. Edit before sending — Claude can get details wrong.
+        Powered by Claude Sonnet 4.6.
       </footer>
     </main>
   );
 }
-

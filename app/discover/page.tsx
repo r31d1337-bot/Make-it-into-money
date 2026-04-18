@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listShares } from "@/lib/store";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
+import ToolsMenu from "@/components/ToolsMenu";
 
 export const dynamic = "force-dynamic"; // always fresh — reads the filesystem
 
@@ -44,16 +45,11 @@ export default async function DiscoverPage() {
       />
 
       <nav className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link href="/" className="text-sm text-neutral-400 hover:text-white">
             ← Home
           </Link>
-          <Link
-            href="/resume"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
-          >
-            Resume
-          </Link>
+          <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
