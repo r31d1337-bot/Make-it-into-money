@@ -7,6 +7,7 @@ import PlanMarkdown from "@/components/PlanMarkdown";
 import MoneyRain from "@/components/MoneyRain";
 import RevenueCalculator from "@/components/RevenueCalculator";
 import VoiceInput from "@/components/VoiceInput";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -275,7 +276,7 @@ function Home() {
       {/* Ambient gradient glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(120,80,255,0.18),transparent_70%)]"
+        className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"
       />
 
       {/* Money rain — only while generating */}
@@ -302,15 +303,18 @@ function Home() {
             Discover
           </Link>
         </div>
-        {hasStarted && (
-          <button
-            type="button"
-            onClick={onNew}
-            className="rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
-          >
-            + New
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {hasStarted && (
+            <button
+              type="button"
+              onClick={onNew}
+              className="rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
+            >
+              + New
+            </button>
+          )}
+          <ThemeToggle />
+        </div>
       </div>
 
       {!hasStarted ? (

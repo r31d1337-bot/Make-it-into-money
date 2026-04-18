@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
+import ThemeToggle from "@/components/ThemeToggle";
 import { loadShare } from "@/lib/store";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -30,7 +31,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
     <main className="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(120,80,255,0.18),transparent_70%)]"
+        className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"
       />
 
       <nav className="mb-8 flex items-center justify-between">
@@ -40,12 +41,15 @@ export default async function SharedPlanPage({ params }: PageProps) {
         >
           ← Discover
         </Link>
-        <Link
-          href={`/?idea=${encodeURIComponent(plan.idea)}`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm text-purple-200 transition hover:border-purple-500/70 hover:bg-purple-500/20"
-        >
-          Remix this plan →
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/?idea=${encodeURIComponent(plan.idea)}`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm text-purple-200 transition hover:border-purple-500/70 hover:bg-purple-500/20"
+          >
+            Remix this plan →
+          </Link>
+          <ThemeToggle />
+        </div>
       </nav>
 
       <header className="mb-10">
