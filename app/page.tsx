@@ -385,34 +385,45 @@ export default function Home() {
             {pendingAssistant && (
               <>
                 <style>{`
-                  @keyframes skeletonShimmer {
-                    0%   { background-position: 200% 0; }
-                    100% { background-position: -200% 0; }
+                  @keyframes skeletonSweep {
+                    0%   { transform: translateX(-100%); }
+                    100% { transform: translateX(100%); }
                   }
-                  .skeleton-text,
-                  .skeleton-text * {
+                  @keyframes skeletonPulse {
+                    0%, 100% { opacity: 1; }
+                    50%      { opacity: 0.75; }
+                  }
+                  .skeleton-streaming {
+                    position: relative;
+                    overflow: hidden;
+                    animation: skeletonPulse 2s ease-in-out infinite;
+                  }
+                  .skeleton-streaming::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
                     background: linear-gradient(
-                      90deg,
-                      rgba(120, 120, 135, 0.55) 0%,
-                      rgba(255, 255, 255, 0.95) 50%,
-                      rgba(120, 120, 135, 0.55) 100%
+                      110deg,
+                      transparent 0%,
+                      transparent 35%,
+                      rgba(168, 130, 255, 0.22) 50%,
+                      transparent 65%,
+                      transparent 100%
                     );
-                    background-size: 200% 100%;
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    color: transparent !important;
-                    animation: skeletonShimmer 2.4s linear infinite;
-                    border-color: transparent !important;
+                    transform: translateX(-100%);
+                    animation: skeletonSweep 2s linear infinite;
+                    pointer-events: none;
+                    z-index: 1;
                   }
+                  .skeleton-streaming > * { position: relative; z-index: 0; }
                   @media (prefers-reduced-motion: reduce) {
-                    .skeleton-text,
-                    .skeleton-text * { animation: none; }
+                    .skeleton-streaming,
+                    .skeleton-streaming::before { animation: none; }
                   }
                 `}</style>
                 <article
                   ref={pendingRef}
-                  className="markdown skeleton-text rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30"
+                  className="markdown skeleton-streaming rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30"
                 >
                   <PlanMarkdown>{pendingAssistant}</PlanMarkdown>
                 </article>
