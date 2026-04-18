@@ -44,9 +44,17 @@ export default async function DiscoverPage() {
       />
 
       <nav className="mb-8 flex items-center justify-between">
-        <Link href="/" className="text-sm text-neutral-400 hover:text-white">
-          ← Home
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-sm text-neutral-400 hover:text-white">
+            ← Home
+          </Link>
+          <Link
+            href="/resume"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
+          >
+            Resume
+          </Link>
+        </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <AuthBar />

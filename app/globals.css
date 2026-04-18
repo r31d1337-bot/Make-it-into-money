@@ -313,4 +313,18 @@ html.light .markdown td {
   [aria-hidden] {
     display: none !important;
   }
+
+  /* Resume print polish */
+  .resume-sheet .markdown h1 {
+    text-align: left;
+    font-size: 1.75rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.125rem !important;
+  }
+  .resume-sheet .markdown h2 {
+    font-size: 1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 1.25rem !important;
+  }
 }
