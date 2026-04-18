@@ -15,7 +15,7 @@ The fastest, smallest thing they could sell this week to validate that anyone wi
 For each: who pays, what they pay for, pricing, and why this model fits.
 
 ## First 5 customers
-Specific audiences and where to find them. Name platforms, communities, or channels.
+Specific audiences and where to find them. Name platforms, communities, or channels — and when you name a real website, marketplace, subreddit, or community, include its URL as a markdown link, e.g. [Fiverr](https://fiverr.com), [r/forhire](https://reddit.com/r/forhire), [Upwork](https://upwork.com), [Etsy](https://etsy.com), [Thumbtack](https://thumbtack.com), [Wyzant](https://wyzant.com), [TaskRabbit](https://taskrabbit.com). Do this anywhere in the plan where you name a real site — not just this section. Only link to sites you're confident exist; never invent URLs.
 
 ## Pricing
 Starting price, how to raise it, and what to benchmark against.

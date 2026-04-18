@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import PlanMarkdown from "@/components/PlanMarkdown";
 import { loadShare } from "@/lib/store";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -73,7 +72,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
               key={i}
               className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30"
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+              <PlanMarkdown>{m.content}</PlanMarkdown>
             </article>
           );
         })}

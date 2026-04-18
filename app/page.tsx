@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import PlanMarkdown from "@/components/PlanMarkdown";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -374,14 +373,14 @@ export default function Home() {
               }
               return (
                 <article key={i} className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                  <PlanMarkdown>{m.content}</PlanMarkdown>
                 </article>
               );
             })}
 
             {pendingAssistant && (
               <article ref={pendingRef} className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{pendingAssistant}</ReactMarkdown>
+                <PlanMarkdown>{pendingAssistant}</PlanMarkdown>
               </article>
             )}
 
