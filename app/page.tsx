@@ -383,9 +383,40 @@ export default function Home() {
             })}
 
             {pendingAssistant && (
-              <article ref={pendingRef} className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30">
-                <PlanMarkdown>{pendingAssistant}</PlanMarkdown>
-              </article>
+              <>
+                <style>{`
+                  @keyframes skeletonShimmer {
+                    0%   { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                  }
+                  .skeleton-text,
+                  .skeleton-text * {
+                    background: linear-gradient(
+                      90deg,
+                      rgba(120, 120, 135, 0.55) 0%,
+                      rgba(255, 255, 255, 0.95) 50%,
+                      rgba(120, 120, 135, 0.55) 100%
+                    );
+                    background-size: 200% 100%;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    color: transparent !important;
+                    animation: skeletonShimmer 2.4s linear infinite;
+                    border-color: transparent !important;
+                  }
+                  @media (prefers-reduced-motion: reduce) {
+                    .skeleton-text,
+                    .skeleton-text * { animation: none; }
+                  }
+                `}</style>
+                <article
+                  ref={pendingRef}
+                  className="markdown skeleton-text rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30"
+                >
+                  <PlanMarkdown>{pendingAssistant}</PlanMarkdown>
+                </article>
+              </>
             )}
 
             {loading && (
