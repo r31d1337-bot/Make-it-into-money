@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 
-const EMOJI = ["💵", "💴", "💶", "💷"];
-const COUNT = 32;
+const EMOJI = ["💵"];
+const COUNT = 120;
 
 type Drop = {
   left: number; // vw
@@ -24,8 +24,8 @@ export default function MoneyRain() {
   const drops = useMemo<Drop[]>(() => {
     return Array.from({ length: COUNT }, () => ({
       left: Math.random() * 100,
-      delay: Math.random() * 3,
-      duration: 3 + Math.random() * 3,
+      delay: Math.random() * 2,
+      duration: 1.2 + Math.random() * 1.6,
       size: 1.25 + Math.random() * 1.5,
       rotate: (Math.random() - 0.5) * 90,
       emoji: EMOJI[Math.floor(Math.random() * EMOJI.length)],
