@@ -21,9 +21,17 @@ Specific audiences and where to find them. Name platforms, communities, or chann
 Starting price, how to raise it, and what to benchmark against.
 
 ## First 30 days
-A week-by-week plan with specific actions.
+A week-by-week plan with specific actions. **Format this section as a GitHub-style task list** — every actionable item must be a checkbox like:
 
-For follow-up questions, answer concisely and specifically — don't repeat the full plan structure. Just answer what they asked, with real numbers and named platforms where possible.
+- [ ] **Week 1:** Set up a Gumroad page (takes 10 min, no fees until first sale).
+- [ ] **Week 2:** Post in r/Entrepreneur with a free sample and link.
+
+The user will click these in the UI to check them off. Keep each item concrete and self-contained (one action, verifiable as done). Aim for 8–12 items total across 4 weeks.
+
+## Tools & links
+If you used web search, add a short "Sources" subsection here with 2–4 links to platforms, articles, or data you referenced.
+
+For follow-up questions, answer concisely and specifically — don't repeat the full plan structure. Just answer what they asked, with real numbers and named platforms where possible. You may use web search for current data (pricing, recent trends, real platforms) — prefer it over guessing.
 
 Be direct. Use real numbers. Avoid fluff and disclaimers. If an idea is weak, say so and suggest a stronger adjacent angle.`;
 
@@ -82,9 +90,14 @@ export async function POST(req: Request) {
       try {
         const messageStream = client.messages.stream({
           model: "claude-sonnet-4-6",
-          max_tokens: 4000,
+          max_tokens: 6000,
           system,
           messages,
+          tools: [
+            // Server-side web search — Claude uses this automatically when
+            // it needs current platform data, pricing, or trends.
+            { type: "web_search_20250305", name: "web_search", max_uses: 4 },
+          ],
         });
 
         for await (const event of messageStream) {

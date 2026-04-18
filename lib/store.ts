@@ -33,6 +33,26 @@ export async function loadShare(id: string): Promise<SharedPlan | null> {
   }
 }
 
+export async function listShares(limit = 30): Promise<SharedPlan[]> {
+  try {
+    await ensureDir();
+    const files = await fs.readdir(DATA_DIR);
+    const plans: SharedPlan[] = [];
+    for (const name of files) {
+      if (!name.endsWith(".json")) continue;
+      try {
+        const raw = await fs.readFile(path.join(DATA_DIR, name), "utf8");
+        plans.push(JSON.parse(raw) as SharedPlan);
+      } catch {
+        // skip malformed
+      }
+    }
+    return plans.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 export function newId(): string {
   // 10-char URL-safe random ID.
   const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";

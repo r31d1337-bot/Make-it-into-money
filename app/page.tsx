@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
 import MoneyRain from "@/components/MoneyRain";
+import RevenueCalculator from "@/components/RevenueCalculator";
+import VoiceInput from "@/components/VoiceInput";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -53,7 +56,16 @@ function uuid() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-export default function Home() {
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <Home />
+    </Suspense>
+  );
+}
+
+function Home() {
+  const searchParams = useSearchParams();
   // Chat state
   const [idea, setIdea] = useState("");
   const [context, setContext] = useState<Context>({});
@@ -79,6 +91,15 @@ export default function Home() {
   useEffect(() => {
     setHistory(loadHistory());
   }, []);
+
+  // Remix flow: prefill the idea textarea from ?idea= in the URL.
+  useEffect(() => {
+    const incoming = searchParams.get("idea");
+    if (incoming && !idea) {
+      setIdea(incoming.slice(0, 2000));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Auto-scroll to latest assistant output while streaming
   useEffect(() => {
@@ -262,17 +283,25 @@ export default function Home() {
 
       {/* Top bar */}
       <div className="no-print mb-8 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => setHistoryOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
-          History
-          {history.length > 0 && (
-            <span className="rounded-full bg-neutral-800 px-1.5 text-xs text-neutral-400">{history.length}</span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+            History
+            {history.length > 0 && (
+              <span className="rounded-full bg-neutral-800 px-1.5 text-xs text-neutral-400">{history.length}</span>
+            )}
+          </button>
+          <Link
+            href="/discover"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
+          >
+            Discover
+          </Link>
+        </div>
         {hasStarted && (
           <button
             type="button"
@@ -310,6 +339,12 @@ export default function Home() {
               />
               <div className="pointer-events-none absolute bottom-3 right-4 text-xs text-neutral-600">
                 ⌘↵ to send
+              </div>
+              <div className="absolute right-3 top-3">
+                <VoiceInput
+                  disabled={loading}
+                  onTranscript={(t) => setIdea((prev) => (prev ? `${prev} ${t}` : t))}
+                />
               </div>
             </div>
 
@@ -377,7 +412,7 @@ export default function Home() {
               }
               return (
                 <article key={i} className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30">
-                  <PlanMarkdown>{m.content}</PlanMarkdown>
+                  <PlanMarkdown planId={currentId ?? undefined}>{m.content}</PlanMarkdown>
                 </article>
               );
             })}
@@ -495,6 +530,10 @@ export default function Home() {
                   </Link>
                 </div>
               )}
+
+              <div className="mt-8">
+                <RevenueCalculator />
+              </div>
             </>
           )}
         </>

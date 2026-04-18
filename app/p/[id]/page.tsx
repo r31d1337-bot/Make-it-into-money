@@ -33,12 +33,18 @@ export default async function SharedPlanPage({ params }: PageProps) {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(120,80,255,0.18),transparent_70%)]"
       />
 
-      <nav className="mb-8">
+      <nav className="mb-8 flex items-center justify-between">
         <Link
-          href="/"
+          href="/discover"
           className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white"
         >
-          ← Make your own
+          ← Discover
+        </Link>
+        <Link
+          href={`/?idea=${encodeURIComponent(plan.idea)}`}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm text-purple-200 transition hover:border-purple-500/70 hover:bg-purple-500/20"
+        >
+          Remix this plan →
         </Link>
       </nav>
 
@@ -72,7 +78,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
               key={i}
               className="markdown rounded-xl border border-neutral-900 bg-neutral-950/60 p-6 shadow-xl shadow-black/30"
             >
-              <PlanMarkdown>{m.content}</PlanMarkdown>
+              <PlanMarkdown planId={`share:${id}`}>{m.content}</PlanMarkdown>
             </article>
           );
         })}

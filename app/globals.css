@@ -78,6 +78,18 @@ html, body {
   color: #71717a;
 }
 
+/* GFM task-list — no bullet, tighter layout. Checkbox rendered by PlanMarkdown. */
+.markdown ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.markdown li.task-item {
+  margin: 0.5rem 0;
+}
+.markdown li.task-item input[type="checkbox"] {
+  display: none;
+}
+
 .markdown strong {
   color: #ffffff;
   font-weight: 600;
