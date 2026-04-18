@@ -1,11 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { Message, Context } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const SYSTEM_PROMPT = `You are a pragmatic business strategist who helps people turn skills and ideas into income. Someone will describe a skill, expertise, or idea. You give them a concrete, actionable monetization plan — not generic advice.
+const BASE_SYSTEM = `You are a pragmatic business strategist who helps people turn skills and ideas into income. You give concrete, actionable advice — never generic platitudes.
 
-Structure your response as:
+When someone describes a skill or idea for the first time, respond with a full monetization plan in this structure:
 
 ## Quickest path to $1
 The fastest, smallest thing they could sell this week to validate that anyone will pay.
@@ -22,7 +23,25 @@ Starting price, how to raise it, and what to benchmark against.
 ## First 30 days
 A week-by-week plan with specific actions.
 
-Be direct. Use real numbers. Avoid fluff, disclaimers, and "it depends." If the idea is weak, say so — and suggest an adjacent angle that's stronger.`;
+For follow-up questions, answer concisely and specifically — don't repeat the full plan structure. Just answer what they asked, with real numbers and named platforms where possible.
+
+Be direct. Use real numbers. Avoid fluff and disclaimers. If an idea is weak, say so and suggest a stronger adjacent angle.`;
+
+function contextPreamble(ctx?: Context): string {
+  if (!ctx) return "";
+  const lines: string[] = [];
+  if (ctx.time) lines.push(`- Time available: ${ctx.time}`);
+  if (ctx.budget) lines.push(`- Starting budget: ${ctx.budget}`);
+  if (ctx.tech) lines.push(`- Tech comfort: ${ctx.tech}`);
+  if (lines.length === 0) return "";
+  return `\n\nUser's constraints — tailor the plan to these:\n${lines.join("\n")}`;
+}
+
+type Body = {
+  messages?: Message[];
+  input?: string; // legacy single-shot
+  context?: Context;
+};
 
 export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -30,16 +49,31 @@ export async function POST(req: Request) {
     return new Response("Missing ANTHROPIC_API_KEY on the server.", { status: 500 });
   }
 
-  let input: string;
+  let body: Body;
   try {
-    const body = await req.json();
-    input = typeof body?.input === "string" ? body.input.trim() : "";
+    body = await req.json();
   } catch {
     return new Response("Invalid JSON body.", { status: 400 });
   }
-  if (!input) return new Response("Missing input.", { status: 400 });
-  if (input.length > 4000) return new Response("Input too long (max 4000 chars).", { status: 400 });
 
+  // Accept either a messages array (chat) or a single input string (first turn).
+  let messages: Message[] = [];
+  if (Array.isArray(body.messages) && body.messages.length > 0) {
+    messages = body.messages
+      .filter((m) => m && typeof m.content === "string" && (m.role === "user" || m.role === "assistant"))
+      .map((m) => ({ role: m.role, content: m.content.trim() }))
+      .filter((m) => m.content.length > 0);
+  } else if (typeof body.input === "string" && body.input.trim().length > 0) {
+    messages = [{ role: "user", content: body.input.trim() }];
+  }
+
+  if (messages.length === 0) return new Response("Missing input.", { status: 400 });
+  if (messages[0].role !== "user") return new Response("First message must be user.", { status: 400 });
+
+  const totalChars = messages.reduce((n, m) => n + m.content.length, 0);
+  if (totalChars > 40000) return new Response("Conversation too long.", { status: 400 });
+
+  const system = BASE_SYSTEM + contextPreamble(body.context);
   const client = new Anthropic({ apiKey });
 
   const stream = new ReadableStream<Uint8Array>({
@@ -49,8 +83,8 @@ export async function POST(req: Request) {
         const messageStream = client.messages.stream({
           model: "claude-sonnet-4-6",
           max_tokens: 4000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: input }],
+          system,
+          messages,
         });
 
         for await (const event of messageStream) {

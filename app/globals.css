@@ -153,3 +153,64 @@ html, body {
   font-weight: 600;
   color: #fafafa;
 }
+
+/* Print styles — clean B&W layout for PDF export */
+@media print {
+  :root {
+    --background: #ffffff;
+    --foreground: #111111;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .print-header h1 {
+    -webkit-text-fill-color: #111111 !important;
+    color: #111111 !important;
+    background: none !important;
+    font-size: 1.75rem !important;
+  }
+
+  article.markdown,
+  .markdown {
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    color: #111111 !important;
+    page-break-inside: avoid;
+  }
+
+  .markdown h1,
+  .markdown h2,
+  .markdown h3,
+  .markdown strong {
+    color: #000000 !important;
+  }
+
+  .markdown h2 {
+    border-bottom: 1px solid #cccccc !important;
+    page-break-after: avoid;
+  }
+
+  .markdown a {
+    color: #111111 !important;
+    text-decoration: underline;
+  }
+
+  /* Hide the gradient glow in print */
+  [aria-hidden] {
+    display: none !important;
+  }
+}
