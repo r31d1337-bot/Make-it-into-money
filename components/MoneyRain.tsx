@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-const EMOJI = ["💵", "💰", "💸", "🤑", "💴", "💶"];
+const EMOJI = ["💵", "💴", "💶", "💷"];
 const COUNT = 32;
 
 type Drop = {
