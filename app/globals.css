@@ -154,35 +154,6 @@ html, body {
   color: #fafafa;
 }
 
-/* Money rain — shown only while a plan is generating */
-@keyframes money-fall {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.85;
-  }
-  100% {
-    transform: translateY(110vh) rotate(var(--rot, 0deg));
-    opacity: 0.85;
-  }
-}
-
-.money-drop {
-  animation-name: money-fall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  filter: drop-shadow(0 4px 12px rgba(120, 80, 255, 0.25));
-  user-select: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .money-rain {
-    display: none;
-  }
-}
-
 /* Print styles — clean B&W layout for PDF export */
 @media print {
   :root {

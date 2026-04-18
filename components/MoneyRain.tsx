@@ -15,9 +15,10 @@ type Drop = {
 };
 
 /**
- * Non-interactive overlay that rains money emojis from above.
- * Render it conditionally; positions are memoized per-mount so the drops
- * look stable (not re-shuffled) while React re-renders during streaming.
+ * Non-interactive overlay that rains banknote emojis from above.
+ * Keyframes and animation are inlined so Tailwind v4 can't purge them,
+ * and positions are memoized per-mount so React re-renders during
+ * streaming don't reshuffle the drops.
  */
 export default function MoneyRain() {
   const drops = useMemo<Drop[]>(() => {
@@ -32,26 +33,39 @@ export default function MoneyRain() {
   }, []);
 
   return (
-    <div
-      aria-hidden
-      className="money-rain pointer-events-none fixed inset-0 z-30 overflow-hidden"
-    >
-      {drops.map((d, i) => (
-        <span
-          key={i}
-          className="money-drop absolute top-0 will-change-transform"
-          style={{
-            left: `${d.left}vw`,
-            fontSize: `${d.size}rem`,
-            animationDelay: `${d.delay}s`,
-            animationDuration: `${d.duration}s`,
-            // Randomize rotation via CSS var consumed by @keyframes
-            ["--rot" as string]: `${d.rotate}deg`,
-          }}
-        >
-          {d.emoji}
-        </span>
-      ))}
-    </div>
+    <>
+      <style>{`
+        @keyframes moneyFall {
+          0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0; }
+          10%  { opacity: 0.9; }
+          100% { transform: translate3d(0, 110vh, 0) rotate(var(--rot, 0deg)); opacity: 0.9; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .money-rain { display: none; }
+        }
+      `}</style>
+      <div
+        aria-hidden
+        className="money-rain pointer-events-none fixed inset-0 z-30 overflow-hidden"
+      >
+        {drops.map((d, i) => (
+          <span
+            key={i}
+            className="absolute top-0 will-change-transform"
+            style={{
+              left: `${d.left}vw`,
+              fontSize: `${d.size}rem`,
+              animation: `moneyFall ${d.duration}s linear ${d.delay}s infinite`,
+              filter: "drop-shadow(0 4px 12px rgba(120, 80, 255, 0.25))",
+              userSelect: "none",
+              // CSS custom prop consumed by the keyframe's rotate()
+              ["--rot" as string]: `${d.rotate}deg`,
+            }}
+          >
+            {d.emoji}
+          </span>
+        ))}
+      </div>
+    </>
   );
 }
