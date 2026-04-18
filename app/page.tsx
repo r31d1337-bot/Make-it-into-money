@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import PlanMarkdown from "@/components/PlanMarkdown";
+import MoneyRain from "@/components/MoneyRain";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -255,6 +256,9 @@ export default function Home() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(120,80,255,0.18),transparent_70%)]"
       />
+
+      {/* Money rain — only while generating */}
+      {loading && <MoneyRain />}
 
       {/* Top bar */}
       <div className="no-print mb-8 flex items-center justify-between">
