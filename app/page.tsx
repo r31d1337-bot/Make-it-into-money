@@ -8,6 +8,7 @@ import MoneyRain from "@/components/MoneyRain";
 import RevenueCalculator from "@/components/RevenueCalculator";
 import VoiceInput from "@/components/VoiceInput";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthBar from "@/components/AuthBar";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -314,6 +315,7 @@ function Home() {
             </button>
           )}
           <ThemeToggle />
+          <AuthBar />
         </div>
       </div>
 

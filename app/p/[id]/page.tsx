@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthBar from "@/components/AuthBar";
 import { loadShare } from "@/lib/store";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -49,6 +50,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
             Remix this plan →
           </Link>
           <ThemeToggle />
+          <AuthBar />
         </div>
       </nav>
 

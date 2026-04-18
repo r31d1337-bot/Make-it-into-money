@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listShares } from "@/lib/store";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthBar from "@/components/AuthBar";
 
 export const dynamic = "force-dynamic"; // always fresh — reads the filesystem
 
@@ -46,7 +47,10 @@ export default async function DiscoverPage() {
         <Link href="/" className="text-sm text-neutral-400 hover:text-white">
           ← Home
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <AuthBar />
+        </div>
       </nav>
 
       <header className="mb-10">
