@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Footer from "@/components/Footer";
 
@@ -6,6 +6,16 @@ export const metadata: Metadata = {
   title: "mintr — make what you know pay",
   description:
     "Turn any skill into a monetization plan, and write the resume, cover letter, and interview prep to back it up.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "mintr",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#07070a",
+  colorScheme: "dark light",
 };
 
 // Runs before React hydrates — sets `.light` on <html> based on stored

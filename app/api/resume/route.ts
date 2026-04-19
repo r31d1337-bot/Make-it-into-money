@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { requirePro } from "@/lib/auth";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -70,6 +71,9 @@ function buildUserMessage(body: Body): string {
 export async function POST(req: Request) {
   const gate = await requirePro();
   if (!gate.ok) return new Response(gate.message, { status: gate.status });
+
+  const rl = checkRateLimit(rateLimitKey(gate.user.id, req), "pro-tool");
+  if (!rl.ok) return rateLimitResponse(rl);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {

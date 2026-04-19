@@ -68,8 +68,8 @@ export default async function DiscoverPage() {
       {plans.length === 0 ? (
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/60 p-8 text-center text-sm text-neutral-500">
           No shared plans yet. Make one on the{" "}
-          <Link href="/" className="text-purple-300 underline decoration-dotted">
-            home page
+          <Link href="/monetize" className="text-purple-300 underline decoration-dotted">
+            monetize page
           </Link>{" "}
           and hit Share.
         </div>

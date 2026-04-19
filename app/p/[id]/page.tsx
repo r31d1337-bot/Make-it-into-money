@@ -44,7 +44,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
         </div>
         <div className="flex items-center gap-2">
           <Link
-            href={`/?idea=${encodeURIComponent(plan.idea)}`}
+            href={`/monetize?idea=${encodeURIComponent(plan.idea)}`}
             className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm text-purple-200 transition hover:border-purple-500/70 hover:bg-purple-500/20"
           >
             Remix this plan →

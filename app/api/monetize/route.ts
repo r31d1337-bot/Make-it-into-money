@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message, Context } from "@/lib/types";
+import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -56,6 +58,10 @@ export async function POST(req: Request) {
   if (!apiKey) {
     return new Response("Missing ANTHROPIC_API_KEY on the server.", { status: 500 });
   }
+
+  const user = await getCurrentUser();
+  const rl = checkRateLimit(rateLimitKey(user?.id ?? null, req), "monetize");
+  if (!rl.ok) return rateLimitResponse(rl);
 
   let body: Body;
   try {

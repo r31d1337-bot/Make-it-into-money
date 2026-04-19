@@ -1,5 +1,7 @@
 import { saveShare, newId } from "@/lib/store";
 import type { Message, Context, SharedPlan } from "@/lib/types";
+import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 
@@ -10,6 +12,10 @@ type Body = {
 };
 
 export async function POST(req: Request) {
+  const user = await getCurrentUser();
+  const rl = checkRateLimit(rateLimitKey(user?.id ?? null, req), "share");
+  if (!rl.ok) return rateLimitResponse(rl);
+
   let body: Body;
   try {
     body = await req.json();

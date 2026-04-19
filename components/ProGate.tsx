@@ -99,7 +99,7 @@ export default function ProGate({ feature, children }: Props) {
 
         <p className="mt-6 text-xs text-neutral-500">
           Or use the{" "}
-          <Link href="/" className="text-neutral-300 underline decoration-dotted hover:text-white">
+          <Link href="/monetize" className="text-neutral-300 underline decoration-dotted hover:text-white">
             Turn This Into Money
           </Link>{" "}
           tool — it stays free forever.

@@ -113,7 +113,7 @@ export default function PricingPage() {
           features={FREE_FEATURES}
           cta={
             <Link
-              href="/"
+              href="/monetize"
               className="inline-flex w-full justify-center rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
             >
               Use free tools

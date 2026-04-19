@@ -166,8 +166,8 @@ export default function ChecklistPage() {
       ) : plans.length === 0 ? (
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/60 p-8 text-center text-sm text-neutral-500">
           No tasks yet. Generate a plan on the{" "}
-          <Link href="/" className="text-purple-300 underline decoration-dotted">
-            home page
+          <Link href="/monetize" className="text-purple-300 underline decoration-dotted">
+            monetize page
           </Link>{" "}
           — the &ldquo;First 30 days&rdquo; section shows up here as checkable items.
         </div>
