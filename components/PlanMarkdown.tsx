@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { hashText, taskKey } from "@/lib/tasks";
 
 type Props = {
   children: string;
@@ -13,13 +14,6 @@ type Props = {
    */
   planId?: string;
 };
-
-// Fast deterministic 32-bit hash (djb2) → short base36 string.
-function hashText(s: string): string {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);
-  return (h >>> 0).toString(36);
-}
 
 /**
  * Renders streamed/stored plan markdown.
@@ -106,7 +100,7 @@ function TaskListItem({
   // Derive storage key from the item's text content so the same task keeps
   // its state across re-renders (even if the model re-streams ordering).
   const textContent = extractText(children).trim();
-  const key = planId ? `money.task.${planId}.${hashText(textContent)}` : null;
+  const key = planId ? taskKey(planId, hashText(textContent)) : null;
 
   // Hydrate from localStorage on mount.
   useEffect(() => {

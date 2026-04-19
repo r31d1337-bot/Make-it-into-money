@@ -13,6 +13,7 @@ type Tool = {
 
 const TOOLS: Tool[] = [
   { href: "/", label: "Monetize an idea", desc: "Turn any skill into a plan · free" },
+  { href: "/checklist", label: "Checklist", desc: "All your action items in one place" },
   { href: "/resume", label: "Write my resume", desc: "One-page ATS-friendly resume", pro: true },
   { href: "/cover-letter", label: "Cover letter", desc: "Tight three-paragraph letter", pro: true },
   { href: "/interview-prep", label: "Interview prep", desc: "Tailored questions + prep", pro: true },
