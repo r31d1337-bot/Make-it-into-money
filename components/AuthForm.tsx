@@ -127,6 +127,20 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           </>
         )}
       </p>
+
+      {mode === "signup" && (
+        <p className="mt-4 text-center text-xs text-neutral-600">
+          By creating an account you agree to our{" "}
+          <Link href="/terms" className="underline decoration-dotted hover:text-neutral-400">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline decoration-dotted hover:text-neutral-400">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      )}
     </div>
   );
 }
