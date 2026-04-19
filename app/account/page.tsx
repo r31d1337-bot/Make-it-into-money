@@ -8,12 +8,28 @@ import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
 
+type Plan = "monthly" | "yearly" | "lifetime";
+
 type SessionUser = {
   id: string;
   email: string;
   createdAt: number;
   isPro?: boolean;
   proSince?: number | null;
+  proPlan?: Plan | null;
+  proExpiresAt?: number | null;
+};
+
+const PRICES: Record<Plan, string> = {
+  monthly: "$7.99/month",
+  yearly: "$79/year",
+  lifetime: "$249 one-time",
+};
+
+const LABELS: Record<Plan, string> = {
+  monthly: "Monthly",
+  yearly: "Yearly",
+  lifetime: "Lifetime",
 };
 
 export default function AccountPage() {
@@ -29,11 +45,15 @@ export default function AccountPage() {
       .catch(() => setUser(null));
   }, []);
 
-  async function hit(endpoint: "/api/subscribe" | "/api/unsubscribe") {
+  async function hit(endpoint: "/api/subscribe" | "/api/unsubscribe", plan?: Plan) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(endpoint, { method: "POST" });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: plan ? JSON.stringify({ plan }) : undefined,
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
       setUser(data.user);
@@ -109,6 +129,7 @@ export default function AccountPage() {
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
               Subscription
             </h2>
+
             {user.isPro ? (
               <>
                 <div className="flex items-center gap-2 text-lg font-semibold text-white">
@@ -117,23 +138,77 @@ export default function AccountPage() {
                   </span>
                   Active
                 </div>
-                {user.proSince && (
-                  <p className="mt-1 text-sm text-neutral-400">
-                    Since {new Date(user.proSince).toLocaleDateString()}
-                  </p>
-                )}
-                <p className="mt-4 text-sm text-neutral-300">
-                  $7.99/month · Unlimited resume, cover letter, and interview prep on Opus 4.7.
-                </p>
-                <div className="mt-5 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => hit("/api/unsubscribe")}
-                    disabled={loading}
-                    className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-red-900 hover:text-red-300 disabled:opacity-60"
-                  >
-                    {loading ? "Working..." : "Cancel subscription"}
-                  </button>
+
+                <dl className="mt-4 space-y-2 text-sm">
+                  {user.proPlan && (
+                    <div className="flex justify-between">
+                      <dt className="text-neutral-500">Plan</dt>
+                      <dd className="text-neutral-200">
+                        {LABELS[user.proPlan]} · {PRICES[user.proPlan]}
+                      </dd>
+                    </div>
+                  )}
+                  {user.proSince && (
+                    <div className="flex justify-between">
+                      <dt className="text-neutral-500">Started</dt>
+                      <dd className="text-neutral-200">
+                        {new Date(user.proSince).toLocaleDateString()}
+                      </dd>
+                    </div>
+                  )}
+                  {user.proPlan === "lifetime" ? (
+                    <div className="flex justify-between">
+                      <dt className="text-neutral-500">Renewal</dt>
+                      <dd className="text-neutral-200">Never — yours forever</dd>
+                    </div>
+                  ) : user.proExpiresAt ? (
+                    <div className="flex justify-between">
+                      <dt className="text-neutral-500">
+                        {user.proPlan === "monthly" ? "Renews on" : "Renews on"}
+                      </dt>
+                      <dd className="text-neutral-200">
+                        {new Date(user.proExpiresAt).toLocaleDateString()}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {user.proPlan !== "lifetime" && (
+                    <>
+                      {user.proPlan !== "yearly" && (
+                        <button
+                          type="button"
+                          onClick={() => hit("/api/subscribe", "yearly")}
+                          disabled={loading}
+                          className="rounded-lg border border-purple-500/40 bg-purple-500/10 px-4 py-2 text-sm text-purple-200 hover:border-purple-500/70 hover:bg-purple-500/20 disabled:opacity-60"
+                        >
+                          Switch to yearly · save 17%
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => hit("/api/subscribe", "lifetime")}
+                        disabled={loading}
+                        className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200 hover:border-amber-500/70 hover:bg-amber-500/20 disabled:opacity-60"
+                      >
+                        Upgrade to lifetime
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => hit("/api/unsubscribe")}
+                        disabled={loading}
+                        className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-red-900 hover:text-red-300 disabled:opacity-60"
+                      >
+                        Cancel subscription
+                      </button>
+                    </>
+                  )}
+                  {user.proPlan === "lifetime" && (
+                    <p className="text-sm text-neutral-400">
+                      Thanks for going lifetime. No renewals, no cancel needed.
+                    </p>
+                  )}
                 </div>
               </>
             ) : (
@@ -143,21 +218,13 @@ export default function AccountPage() {
                   Upgrade to Pro for unlimited resumes, cover letters, and interview prep
                   — powered by Claude Opus 4.7.
                 </p>
-                <div className="mt-5 flex gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   <Link
                     href="/pricing"
                     className="rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 hover:brightness-110"
                   >
                     See Pro plans →
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => hit("/api/subscribe")}
-                    disabled={loading}
-                    className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white disabled:opacity-60"
-                  >
-                    {loading ? "Working..." : "Upgrade now"}
-                  </button>
                 </div>
               </>
             )}

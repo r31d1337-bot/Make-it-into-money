@@ -7,7 +7,7 @@ export async function POST() {
   if (!user) {
     return Response.json({ error: "Sign in first" }, { status: 401 });
   }
-  const updated = await setUserPro(user.id, false);
+  const updated = await setUserPro(user.id, null);
   if (!updated) {
     return Response.json({ error: "User not found" }, { status: 404 });
   }

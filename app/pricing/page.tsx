@@ -14,29 +14,32 @@ type SessionUser = {
   createdAt: number;
   isPro?: boolean;
   proSince?: number | null;
+  proPlan?: "monthly" | "yearly" | "lifetime" | null;
+  proExpiresAt?: number | null;
 };
 
-const FREE_FEATURES = [
-  "Unlimited Turn-This-Into-Money plans",
-  "Streamed Claude Sonnet 4.6 responses",
-  "Real-time web search for market data",
-  "Shareable plan links · Discover feed",
-  "Dark / light mode · history on device",
-];
+type Plan = "monthly" | "yearly" | "lifetime";
 
 const PRO_FEATURES = [
-  "Everything in free, plus:",
   "Write my resume — unlimited",
   "Cover letter writer — unlimited",
   "Interview prep — unlimited",
-  "All three powered by Claude Opus 4.7",
+  "All three on Claude Opus 4.7",
   "Priority email support",
+];
+
+const FREE_FEATURES = [
+  "Unlimited Turn-This-Into-Money plans",
+  "Web search for real market data",
+  "Shareable plan links · Discover",
+  "Dark / light mode",
+  "History on device",
 ];
 
 export default function PricingPage() {
   const router = useRouter();
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<Plan | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,15 +49,19 @@ export default function PricingPage() {
       .catch(() => setUser(null));
   }, []);
 
-  async function onUpgrade() {
+  async function onUpgrade(plan: Plan) {
     if (!user) {
       router.push(`/signup?next=${encodeURIComponent("/pricing")}`);
       return;
     }
-    setSubmitting(true);
+    setSubmitting(plan);
     setError(null);
     try {
-      const res = await fetch("/api/subscribe", { method: "POST" });
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || `Upgrade failed (${res.status})`);
       setUser(data.user);
@@ -62,14 +69,15 @@ export default function PricingPage() {
     } catch (err) {
       setError((err as Error).message);
     } finally {
-      setSubmitting(false);
+      setSubmitting(null);
     }
   }
 
   const isPro = !!user?.isPro;
+  const currentPlan = user?.proPlan ?? null;
 
   return (
-    <main className="relative mx-auto max-w-4xl px-6 py-10">
+    <main className="relative mx-auto max-w-5xl px-6 py-10">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"
@@ -88,97 +96,106 @@ export default function PricingPage() {
 
       <header className="mb-12 text-center">
         <h1 className="bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-4xl font-semibold tracking-tight text-transparent sm:text-5xl">
-          Simple pricing.
+          Pricing.
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-neutral-400">
-          Monetize ideas free, forever. Unlock the full career suite for $7.99/month.
+          Monetize ideas free forever. Pick a Pro plan to unlock the career suite.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         {/* Free */}
-        <section className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-7">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
-              Free
-            </h2>
-            <p className="mt-2 text-4xl font-semibold tracking-tight text-white">$0</p>
-            <p className="text-sm text-neutral-500">forever</p>
-          </div>
-          <ul className="space-y-2.5">
-            {FREE_FEATURES.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-neutral-300">
-                <CheckIcon className="text-neutral-500" />
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <Link
-            href="/"
-            className="mt-6 inline-flex rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
-          >
-            Use free tools →
-          </Link>
-        </section>
-
-        {/* Pro */}
-        <section className="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 via-neutral-950/60 to-neutral-950/60 p-7 shadow-xl shadow-purple-500/10">
-          <div className="absolute -top-3 right-6 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-lg shadow-purple-500/30">
-            Recommended
-          </div>
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-purple-200">
-              Pro
-            </h2>
-            <p className="mt-2 text-4xl font-semibold tracking-tight text-white">
-              $7.99<span className="text-base font-normal text-neutral-400">/month</span>
-            </p>
-            <p className="text-sm text-neutral-500">cancel anytime</p>
-          </div>
-          <ul className="space-y-2.5">
-            {PRO_FEATURES.map((f, i) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-neutral-200">
-                {i === 0 ? (
-                  <SparkleIcon className="text-purple-300" />
-                ) : (
-                  <CheckIcon className="text-purple-300" />
-                )}
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-
-          {isPro ? (
-            <div className="mt-6 space-y-2">
-              <div className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm font-medium text-purple-200">
-                <CheckIcon />
-                You&apos;re on Pro
-              </div>
-              <div>
-                <Link
-                  href="/account"
-                  className="inline-flex rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
-                >
-                  Manage subscription →
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={onUpgrade}
-              disabled={submitting || user === undefined}
-              className="mt-6 inline-flex rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition hover:brightness-110 disabled:from-neutral-800 disabled:to-neutral-900 disabled:text-neutral-500 disabled:shadow-none"
+        <PricingCard
+          tier="Free"
+          price="$0"
+          period="forever"
+          features={FREE_FEATURES}
+          cta={
+            <Link
+              href="/"
+              className="inline-flex w-full justify-center rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2.5 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white"
             >
-              {submitting ? "Starting..." : user ? "Start Pro — $7.99/mo" : "Sign up for Pro"}
-            </button>
-          )}
+              Use free tools
+            </Link>
+          }
+        />
 
-          {error && (
-            <p className="mt-3 text-sm text-red-400">{error}</p>
-          )}
-        </section>
+        {/* Monthly */}
+        <PricingCard
+          tier="Pro · Monthly"
+          price="$7.99"
+          period="per month"
+          subtitle="Cancel anytime."
+          features={PRO_FEATURES}
+          highlight={false}
+          cta={
+            <UpgradeButton
+              plan="monthly"
+              current={isPro && currentPlan === "monthly"}
+              submitting={submitting === "monthly"}
+              onClick={() => onUpgrade("monthly")}
+              disabled={user === undefined || submitting !== null}
+              hasUser={!!user}
+            />
+          }
+        />
+
+        {/* Yearly — most popular */}
+        <PricingCard
+          tier="Pro · Yearly"
+          price="$79"
+          period="per year"
+          subtitle="Save 17% vs monthly · $6.58/mo effective"
+          badge="Most popular"
+          badgeColor="purple"
+          features={PRO_FEATURES}
+          highlight
+          cta={
+            <UpgradeButton
+              plan="yearly"
+              current={isPro && currentPlan === "yearly"}
+              submitting={submitting === "yearly"}
+              onClick={() => onUpgrade("yearly")}
+              disabled={user === undefined || submitting !== null}
+              hasUser={!!user}
+            />
+          }
+        />
+
+        {/* Lifetime */}
+        <PricingCard
+          tier="Pro · Lifetime"
+          price="$249"
+          period="one-time"
+          subtitle="Pay once. Yours forever."
+          badge="Best value"
+          badgeColor="amber"
+          features={[...PRO_FEATURES, "Never pay again"]}
+          cta={
+            <UpgradeButton
+              plan="lifetime"
+              current={isPro && currentPlan === "lifetime"}
+              submitting={submitting === "lifetime"}
+              onClick={() => onUpgrade("lifetime")}
+              disabled={user === undefined || submitting !== null}
+              hasUser={!!user}
+            />
+          }
+        />
       </div>
+
+      {error && (
+        <p className="mt-6 text-center text-sm text-red-400">{error}</p>
+      )}
+
+      {isPro && (
+        <p className="mt-8 text-center text-sm text-neutral-500">
+          You&apos;re on Pro{currentPlan ? ` · ${currentPlan}` : ""}.{" "}
+          <Link href="/account" className="text-purple-300 underline decoration-dotted hover:text-purple-200">
+            Manage in Account →
+          </Link>
+        </p>
+      )}
 
       <section className="mx-auto mt-16 max-w-2xl text-sm text-neutral-500">
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -186,12 +203,21 @@ export default function PricingPage() {
         </h3>
         <dl className="space-y-4">
           <div>
-            <dt className="mb-1 font-medium text-neutral-300">Can I cancel anytime?</dt>
-            <dd>Yes. Cancel from the Account page. You keep Pro access until the end of the current period.</dd>
+            <dt className="mb-1 font-medium text-neutral-300">
+              What&apos;s the difference between Sonnet and Opus?
+            </dt>
+            <dd>
+              Opus is Anthropic&apos;s top model — sharper reasoning, more nuanced
+              writing. Best for career documents where one word matters.
+            </dd>
           </div>
           <div>
-            <dt className="mb-1 font-medium text-neutral-300">What&apos;s the difference between Sonnet and Opus?</dt>
-            <dd>Opus is Anthropic&apos;s top model — sharper reasoning, more nuanced writing. Best for career documents where one word matters.</dd>
+            <dt className="mb-1 font-medium text-neutral-300">Can I cancel monthly or yearly?</dt>
+            <dd>Yes. Cancel from the Account page anytime. You keep access until the end of the current period.</dd>
+          </div>
+          <div>
+            <dt className="mb-1 font-medium text-neutral-300">Is lifetime really forever?</dt>
+            <dd>Yes — one payment, Pro access for as long as mintr exists.</dd>
           </div>
           <div>
             <dt className="mb-1 font-medium text-neutral-300">Is Turn This Into Money really free forever?</dt>
@@ -199,10 +225,122 @@ export default function PricingPage() {
           </div>
         </dl>
         <p className="mt-10 text-center text-xs text-neutral-600">
-          Heads up: billing is currently in dev mode. The upgrade button flips your Pro flag instantly for testing — real Stripe checkout coming before launch.
+          Heads up: billing is currently in dev mode. Upgrade buttons flip your Pro
+          flag instantly for testing — real Stripe checkout coming before launch.
         </p>
       </section>
     </main>
+  );
+}
+
+function PricingCard({
+  tier,
+  price,
+  period,
+  subtitle,
+  badge,
+  badgeColor,
+  features,
+  cta,
+  highlight,
+}: {
+  tier: string;
+  price: string;
+  period: string;
+  subtitle?: string;
+  badge?: string;
+  badgeColor?: "purple" | "amber";
+  features: string[];
+  cta: React.ReactNode;
+  highlight?: boolean;
+}) {
+  const badgeClass =
+    badgeColor === "amber"
+      ? "from-amber-400 to-orange-500 shadow-amber-500/30"
+      : "from-purple-400 to-purple-600 shadow-purple-500/30";
+  return (
+    <section
+      className={`relative flex flex-col rounded-2xl border p-6 ${
+        highlight
+          ? "border-purple-500/30 bg-gradient-to-br from-purple-500/10 via-neutral-950/60 to-neutral-950/60 shadow-xl shadow-purple-500/10"
+          : "border-neutral-900 bg-neutral-950/60"
+      }`}
+    >
+      {badge && (
+        <div
+          className={`absolute -top-3 right-4 rounded-full bg-gradient-to-r px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-lg ${badgeClass}`}
+        >
+          {badge}
+        </div>
+      )}
+      <h2
+        className={`text-xs font-semibold uppercase tracking-wider ${
+          highlight ? "text-purple-200" : "text-neutral-500"
+        }`}
+      >
+        {tier}
+      </h2>
+      <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
+        {price}
+        <span className="ml-1 text-sm font-normal text-neutral-500">{period}</span>
+      </p>
+      {subtitle && <p className="mt-1 text-xs text-neutral-500">{subtitle}</p>}
+
+      <ul className="mt-5 flex-1 space-y-2">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-2 text-sm text-neutral-300">
+            <CheckIcon className={highlight ? "text-purple-300" : "text-neutral-500"} />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6">{cta}</div>
+    </section>
+  );
+}
+
+function UpgradeButton({
+  plan,
+  current,
+  submitting,
+  onClick,
+  disabled,
+  hasUser,
+}: {
+  plan: Plan;
+  current: boolean;
+  submitting: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  hasUser: boolean;
+}) {
+  if (current) {
+    return (
+      <div className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-4 py-2.5 text-sm font-medium text-purple-200">
+        <CheckIcon />
+        Current plan
+      </div>
+    );
+  }
+  const label = submitting
+    ? "Starting..."
+    : !hasUser
+      ? "Sign up for Pro"
+      : plan === "lifetime"
+        ? "Buy lifetime"
+        : plan === "yearly"
+          ? "Start yearly"
+          : "Start monthly";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex w-full justify-center rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition hover:brightness-110 disabled:from-neutral-800 disabled:to-neutral-900 disabled:text-neutral-500 disabled:shadow-none"
+    >
+      {label}
+    </button>
   );
 }
 
@@ -221,21 +359,6 @@ function CheckIcon({ className = "" }: { className?: string }) {
       aria-hidden
     >
       <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function SparkleIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      className={`mt-0.5 flex-none ${className}`}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M12 2l2.39 6.09L20 10.48l-5.61 2.39L12 18.96l-2.39-6.09L4 10.48l5.61-2.39z" />
     </svg>
   );
 }

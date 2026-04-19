@@ -8,6 +8,8 @@ import { cookies } from "next/headers";
 const DATA_DIR = path.join(process.cwd(), ".data");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
 
+export type ProPlan = "monthly" | "yearly" | "lifetime";
+
 export type User = {
   id: string;
   email: string;
@@ -15,10 +17,28 @@ export type User = {
   createdAt: number;
   isPro?: boolean;
   proSince?: number | null;
+  proPlan?: ProPlan | null;
+  /** Epoch ms; null = lifetime / no expiry. */
+  proExpiresAt?: number | null;
 };
 
 // Public shape — never leak passwordHash to clients.
-export type SessionUser = Pick<User, "id" | "email" | "createdAt" | "isPro" | "proSince">;
+export type SessionUser = Pick<
+  User,
+  "id" | "email" | "createdAt" | "isPro" | "proSince" | "proPlan" | "proExpiresAt"
+>;
+
+export const PLAN_DURATIONS_MS: Record<ProPlan, number | null> = {
+  monthly: 30 * 24 * 60 * 60 * 1000,
+  yearly: 365 * 24 * 60 * 60 * 1000,
+  lifetime: null,
+};
+
+export const PLAN_PRICES: Record<ProPlan, number> = {
+  monthly: 7.99,
+  yearly: 79,
+  lifetime: 249,
+};
 
 export const SESSION_COOKIE = "money.session";
 const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -41,27 +61,69 @@ export function toSessionUser(u: User): SessionUser {
     createdAt: u.createdAt,
     isPro: !!u.isPro,
     proSince: u.proSince ?? null,
+    proPlan: u.proPlan ?? null,
+    proExpiresAt: u.proExpiresAt ?? null,
   };
 }
 
-export async function setUserPro(userId: string, isPro: boolean): Promise<User | null> {
+/**
+ * Set (or clear) a user's Pro subscription.
+ *   setUserPro(id, null)              → cancel / downgrade
+ *   setUserPro(id, "monthly")         → 30-day Pro
+ *   setUserPro(id, "yearly")          → 365-day Pro
+ *   setUserPro(id, "lifetime")        → no expiry
+ */
+export async function setUserPro(
+  userId: string,
+  plan: ProPlan | null,
+): Promise<User | null> {
   const users = await loadUsers();
   const idx = users.findIndex((u) => u.id === userId);
   if (idx < 0) return null;
-  users[idx] = {
-    ...users[idx],
-    isPro,
-    proSince: isPro ? users[idx].proSince ?? Date.now() : null,
-  };
+  const now = Date.now();
+  if (plan === null) {
+    users[idx] = {
+      ...users[idx],
+      isPro: false,
+      proSince: null,
+      proPlan: null,
+      proExpiresAt: null,
+    };
+  } else {
+    const durationMs = PLAN_DURATIONS_MS[plan];
+    users[idx] = {
+      ...users[idx],
+      isPro: true,
+      proSince: users[idx].proSince ?? now,
+      proPlan: plan,
+      proExpiresAt: durationMs == null ? null : now + durationMs,
+    };
+  }
   await saveUsers(users);
   return users[idx];
 }
 
+/**
+ * Pro if the flag is set AND (plan is lifetime OR expiry is in the future).
+ * Auto-downgrades expired subscriptions on-read so stale rows self-heal.
+ */
 export async function requirePro(): Promise<
   { ok: true; user: User } | { ok: false; status: 401 | 402; message: string }
 > {
   const user = await getCurrentUser();
   if (!user) return { ok: false, status: 401, message: "Sign in to use this feature." };
+
+  const expired =
+    !!user.proExpiresAt && user.proExpiresAt <= Date.now();
+  if (user.isPro && expired) {
+    await setUserPro(user.id, null);
+    return {
+      ok: false,
+      status: 402,
+      message: "Your Pro subscription expired. Renew to continue.",
+    };
+  }
+
   if (!user.isPro)
     return {
       ok: false,
