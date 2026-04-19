@@ -7,6 +7,7 @@ import PlanMarkdown from "@/components/PlanMarkdown";
 import MoneyRain from "@/components/MoneyRain";
 import RevenueCalculator from "@/components/RevenueCalculator";
 import VoiceInput from "@/components/VoiceInput";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
@@ -328,7 +329,7 @@ function Home() {
               + New
             </button>
           )}
-          <ThemeToggle />
+          <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
       </div>

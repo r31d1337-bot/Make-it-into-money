@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listShares } from "@/lib/store";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
@@ -51,7 +52,7 @@ export default async function DiscoverPage() {
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
       </nav>

@@ -6,6 +6,8 @@ export type ModelChoice = "opus" | "sonnet";
 
 const STORAGE_KEY = "money.model.choice";
 
+const CHANGE_EVENT = "money:model-choice-change";
+
 export function useModelChoice(): [ModelChoice, (v: ModelChoice) => void] {
   const [choice, setChoice] = useState<ModelChoice>("opus");
 
@@ -16,12 +18,31 @@ export function useModelChoice(): [ModelChoice, (v: ModelChoice) => void] {
     } catch {
       // ignore
     }
+
+    // Keep instances in sync across components on the same tab (e.g. header
+    // toggle flipping while a Pro tool page mounts the hook separately).
+    function onChange(e: Event) {
+      const v = (e as CustomEvent<ModelChoice>).detail;
+      if (v === "opus" || v === "sonnet") setChoice(v);
+    }
+    window.addEventListener(CHANGE_EVENT, onChange);
+    // Also sync across browser tabs via the native storage event.
+    function onStorage(e: StorageEvent) {
+      if (e.key !== STORAGE_KEY) return;
+      if (e.newValue === "opus" || e.newValue === "sonnet") setChoice(e.newValue);
+    }
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(CHANGE_EVENT, onChange);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   function set(v: ModelChoice) {
     setChoice(v);
     try {
       localStorage.setItem(STORAGE_KEY, v);
+      window.dispatchEvent(new CustomEvent<ModelChoice>(CHANGE_EVENT, { detail: v }));
     } catch {
       // ignore
     }

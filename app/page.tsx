@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
@@ -60,7 +61,7 @@ export default function Landing() {
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
       </div>

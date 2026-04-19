@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
@@ -90,7 +91,7 @@ export default function PricingPage() {
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
       </div>

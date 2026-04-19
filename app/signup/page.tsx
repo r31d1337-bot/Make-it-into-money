@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import AuthForm from "@/components/AuthForm";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import Wordmark from "@/components/Wordmark";
 
@@ -15,7 +16,7 @@ export default function SignupPage() {
 
       <nav className="mb-12 flex items-center justify-between">
         <Wordmark />
-        <ThemeToggle />
+        <HeaderModelToggle />        <ThemeToggle />
       </nav>
 
       <div className="flex flex-1 items-center">

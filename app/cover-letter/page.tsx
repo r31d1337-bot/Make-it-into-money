@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import PlanMarkdown from "@/components/PlanMarkdown";
+import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
 import ProGate from "@/components/ProGate";
-import ModelPicker, { useModelChoice } from "@/components/ModelPicker";
+import { useModelChoice } from "@/components/ModelPicker";
 import { Input, Textarea } from "@/components/FormFields";
 
 type Form = {
@@ -33,7 +34,7 @@ export default function CoverLetterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [model, setModel] = useModelChoice();
+  const [model] = useModelChoice();
   const abortRef = useRef<AbortController | null>(null);
   const outputRef = useRef<HTMLDivElement | null>(null);
 
@@ -131,7 +132,7 @@ export default function CoverLetterPage() {
               + New
             </button>
           )}
-          <ThemeToggle />
+          <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
       </div>
@@ -193,16 +194,13 @@ export default function CoverLetterPage() {
               placeholder="Senior PM at Acme 2021–now, launched Widget 2.0 (4x MAU growth). Prior PM at Globex 2018–2021."
             />
 
-            <div className="flex flex-wrap items-end gap-3">
-              <ModelPicker value={model} onChange={setModel} disabled={loading} />
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="rounded-lg bg-gradient-to-br from-white to-neutral-200 px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition hover:brightness-110 disabled:from-neutral-800 disabled:to-neutral-900 disabled:text-neutral-500 disabled:shadow-none"
-              >
-                Write my cover letter →
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="rounded-lg bg-gradient-to-br from-white to-neutral-200 px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition hover:brightness-110 disabled:from-neutral-800 disabled:to-neutral-900 disabled:text-neutral-500 disabled:shadow-none"
+            >
+              Write my cover letter →
+            </button>
           </form>
         </>
       ) : (
