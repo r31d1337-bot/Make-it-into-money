@@ -3,7 +3,7 @@ import AuthForm from "@/components/AuthForm";
 import ThemeToggle from "@/components/ThemeToggle";
 import Wordmark from "@/components/Wordmark";
 
-export const metadata = { title: "Sign up · minr" };
+export const metadata = { title: "Sign up · mintr" };
 
 export default function SignupPage() {
   return (

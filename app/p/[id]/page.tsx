@@ -12,7 +12,7 @@ type PageProps = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const plan = await loadShare(id).catch(() => null);
-  if (!plan) return { title: "Plan not found · minr" };
+  if (!plan) return { title: "Plan not found · mintr" };
   const title = `"${plan.idea.slice(0, 80)}" — a monetization plan`;
   return {
     title,

@@ -8,7 +8,7 @@ import Wordmark from "@/components/Wordmark";
 export const dynamic = "force-dynamic"; // always fresh — reads the filesystem
 
 export const metadata = {
-  title: "Discover plans · minr",
+  title: "Discover plans · mintr",
   description: "Browse recent monetization plans shared by others.",
 };
 

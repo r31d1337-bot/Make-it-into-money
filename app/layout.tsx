@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "minr — make what you know pay",
+  title: "mintr — make what you know pay",
   description:
     "Turn any skill into a monetization plan, and write the resume, cover letter, and interview prep to back it up.",
 };

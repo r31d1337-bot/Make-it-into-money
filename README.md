@@ -1,4 +1,4 @@
-# minr
+# mintr
 
 Make what you know pay. A Next.js app that turns any skill into:
 
