@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import PlanMarkdown from "@/components/PlanMarkdown";
+import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
@@ -122,7 +123,7 @@ export default function CoverLetterPage() {
           <Wordmark />
           <ToolsMenu />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           {output && !loading && (
             <button
               type="button"
@@ -135,6 +136,7 @@ export default function CoverLetterPage() {
           <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
+        <MobileNav />
       </div>
 
       <ProGate feature="the cover letter writer">

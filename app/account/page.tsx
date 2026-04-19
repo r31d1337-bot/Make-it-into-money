@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
@@ -137,10 +138,11 @@ function AccountInner() {
           <Wordmark />
           <ToolsMenu />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
+        <MobileNav />
       </div>
 
       <h1 className="mb-8 text-3xl font-semibold tracking-tight">Account</h1>

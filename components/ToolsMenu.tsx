@@ -59,7 +59,7 @@ export default function ToolsMenu() {
   const currentLabel = current?.label.split(" ")[0] ?? "Tools";
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative hidden sm:block">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

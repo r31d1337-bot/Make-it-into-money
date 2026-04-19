@@ -16,6 +16,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#07070a",
   colorScheme: "dark light",
+  // "cover" lets env(safe-area-inset-*) work so notched iPhones don't cut
+  // content under the dynamic island or home indicator.
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
 };
 
 // Runs before React hydrates — sets `.light` on <html> based on stored

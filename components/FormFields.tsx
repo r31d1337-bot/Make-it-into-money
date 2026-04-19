@@ -64,7 +64,9 @@ export function Textarea({
         placeholder={placeholder}
         rows={rows}
         className={`w-full resize-y rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2 text-neutral-100 placeholder:text-neutral-600 focus:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20 ${
-          mono ? "font-mono text-sm" : "text-base"
+          // text-base (16px) on mobile prevents iOS Safari auto-zoom when
+          // the field is focused; collapse to 14px mono on sm+.
+          mono ? "font-mono text-base sm:text-sm" : "text-base"
         }`}
       />
       {hint && <p className="mt-1 text-xs text-neutral-600">{hint}</p>}

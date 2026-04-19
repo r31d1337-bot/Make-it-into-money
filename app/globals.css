@@ -35,6 +35,14 @@ html, body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.15s ease, color 0.15s ease;
+  /* Respect iPhone notch / home indicator when installed as a PWA. */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Prevent layout shifts from iOS rubber-banding and keep tap targets tight. */
+body {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Markdown styling for streamed plan output */

@@ -7,6 +7,7 @@ import PlanMarkdown from "@/components/PlanMarkdown";
 import MoneyRain from "@/components/MoneyRain";
 import RevenueCalculator from "@/components/RevenueCalculator";
 import VoiceInput from "@/components/VoiceInput";
+import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
@@ -319,7 +320,7 @@ function Home() {
             )}
           </button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           {hasStarted && (
             <button
               type="button"
@@ -332,6 +333,7 @@ function Home() {
           <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
+        <MobileNav />
       </div>
 
       {!hasStarted ? (

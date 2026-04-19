@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
+import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
@@ -43,7 +44,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
           <Wordmark />
           <ToolsMenu />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           <Link
             href={`/monetize?idea=${encodeURIComponent(plan.idea)}`}
             className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-1.5 text-sm text-purple-200 transition hover:border-purple-500/70 hover:bg-purple-500/20"
@@ -53,6 +54,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
           <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
+        <MobileNav />
       </nav>
 
       <header className="mb-10">

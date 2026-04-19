@@ -3,6 +3,7 @@ import AuthForm from "@/components/AuthForm";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import Wordmark from "@/components/Wordmark";
+import MobileNav from "@/components/MobileNav";
 
 export const metadata = { title: "Sign up · mintr" };
 
@@ -16,7 +17,11 @@ export default function SignupPage() {
 
       <nav className="mb-12 flex items-center justify-between">
         <Wordmark />
-        <HeaderModelToggle />        <ThemeToggle />
+        <div className="hidden items-center gap-2 sm:flex">
+          <HeaderModelToggle />
+          <ThemeToggle />
+        </div>
+        <MobileNav />
       </nav>
 
       <div className="flex flex-1 items-center">

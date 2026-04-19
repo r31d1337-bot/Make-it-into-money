@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
@@ -22,10 +23,11 @@ export default function TermsPage() {
           <Wordmark />
           <ToolsMenu />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />          <ThemeToggle />
           <AuthBar />
         </div>
+        <MobileNav />
       </div>
 
       <article className="markdown">
