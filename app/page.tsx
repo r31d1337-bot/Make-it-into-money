@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
@@ -114,28 +114,38 @@ function Home() {
 
   const hasStarted = messages.length > 0 || pendingAssistant.length > 0;
 
-  const persist = useCallback(
-    (next: Message[]) => {
-      if (!currentId) return;
-      setHistory((prev) => {
-        const updated: HistoryItem[] = [
-          {
-            id: currentId,
-            idea,
-            context,
-            messages: next,
-            createdAt: prev.find((h) => h.id === currentId)?.createdAt ?? Date.now(),
-          },
-          ...prev.filter((h) => h.id !== currentId),
-        ];
-        saveHistory(updated);
-        return updated;
-      });
-    },
-    [currentId, idea, context],
-  );
+  // Persist takes all inputs as arguments so it can't be tripped up by stale
+  // closures. Earlier version closed over `currentId` from render-N and
+  // silently no-op'd on the first plan because setCurrentId hadn't
+  // propagated yet when streamRequest fired.
+  function persist(
+    id: string,
+    ideaValue: string,
+    ctx: Context,
+    msgs: Message[],
+  ) {
+    setHistory((prev) => {
+      const updated: HistoryItem[] = [
+        {
+          id,
+          idea: ideaValue,
+          context: ctx,
+          messages: msgs,
+          createdAt: prev.find((h) => h.id === id)?.createdAt ?? Date.now(),
+        },
+        ...prev.filter((h) => h.id !== id),
+      ];
+      saveHistory(updated);
+      return updated;
+    });
+  }
 
-  async function streamRequest(allMessages: Message[]) {
+  async function streamRequest(
+    id: string,
+    ideaValue: string,
+    ctx: Context,
+    allMessages: Message[],
+  ) {
     setLoading(true);
     setError(null);
     setPendingAssistant("");
@@ -149,7 +159,7 @@ function Home() {
       const res = await fetch("/api/monetize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: allMessages, context }),
+        body: JSON.stringify({ messages: allMessages, context: ctx }),
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
@@ -178,7 +188,7 @@ function Home() {
       const finalMessages: Message[] = [...allMessages, { role: "assistant", content: assembled }];
       setMessages(finalMessages);
       setPendingAssistant("");
-      persist(finalMessages);
+      persist(id, ideaValue, ctx, finalMessages);
     } else {
       setPendingAssistant("");
     }
@@ -188,20 +198,26 @@ function Home() {
     e?.preventDefault();
     if (!idea.trim() || loading) return;
     const id = uuid();
+    const trimmedIdea = idea.trim();
     setCurrentId(id);
-    const initial: Message[] = [{ role: "user", content: idea.trim() }];
+    const initial: Message[] = [{ role: "user", content: trimmedIdea }];
     setMessages(initial);
-    void streamRequest(initial);
+    // Save immediately so even if the stream aborts, the idea is in history.
+    persist(id, trimmedIdea, context, initial);
+    void streamRequest(id, trimmedIdea, context, initial);
   }
 
   function onFollowUp(e?: React.FormEvent) {
     e?.preventDefault();
     const text = followUp.trim();
-    if (!text || loading) return;
+    if (!text || loading || !currentId) return;
     const next: Message[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setFollowUp("");
-    void streamRequest(next);
+    // Save the user turn immediately so it's in history even before the
+    // assistant's reply finishes streaming.
+    persist(currentId, idea, context, next);
+    void streamRequest(currentId, idea, context, next);
   }
 
   function onStop() {
