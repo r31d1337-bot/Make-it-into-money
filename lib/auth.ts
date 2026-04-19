@@ -15,6 +15,8 @@ export type User = {
   email: string;
   passwordHash: string; // "salt:hex-derived-key"
   createdAt: number;
+  /** Epoch ms when the user clicked their verification email. null = unverified. */
+  emailVerifiedAt?: number | null;
   isPro?: boolean;
   proSince?: number | null;
   proPlan?: ProPlan | null;
@@ -32,6 +34,7 @@ export type SessionUser = Pick<
   | "id"
   | "email"
   | "createdAt"
+  | "emailVerifiedAt"
   | "isPro"
   | "proSince"
   | "proPlan"
@@ -70,6 +73,7 @@ export function toSessionUser(u: User): SessionUser {
     id: u.id,
     email: u.email,
     createdAt: u.createdAt,
+    emailVerifiedAt: u.emailVerifiedAt ?? null,
     isPro: !!u.isPro,
     proSince: u.proSince ?? null,
     proPlan: u.proPlan ?? null,
@@ -308,6 +312,37 @@ export async function authenticate(
 export async function findUserById(id: string): Promise<User | null> {
   const users = await loadUsers();
   return users.find((u) => u.id === id) ?? null;
+}
+
+export async function findUserByEmail(email: string): Promise<User | null> {
+  const normalized = email.trim().toLowerCase();
+  const users = await loadUsers();
+  return users.find((u) => u.email === normalized) ?? null;
+}
+
+export async function markEmailVerified(userId: string): Promise<User | null> {
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return null;
+  if (users[idx].emailVerifiedAt) return users[idx]; // already verified
+  users[idx] = { ...users[idx], emailVerifiedAt: Date.now() };
+  await saveUsers(users);
+  return users[idx];
+}
+
+export async function updateUserPassword(
+  userId: string,
+  newPassword: string,
+): Promise<{ user?: User; error?: string }> {
+  if (!validatePassword(newPassword)) {
+    return { error: "Password must be at least 8 characters." };
+  }
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return { error: "User not found." };
+  users[idx] = { ...users[idx], passwordHash: await hashPassword(newPassword) };
+  await saveUsers(users);
+  return { user: users[idx] };
 }
 
 // ── Request helpers ────────────────────────────────────────────────────────

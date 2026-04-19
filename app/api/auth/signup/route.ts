@@ -1,4 +1,6 @@
 import { createUser, setSessionCookie, toSessionUser } from "@/lib/auth";
+import { buildAbsoluteUrl, sendVerificationEmail } from "@/lib/email";
+import { createVerificationToken } from "@/lib/tokens";
 
 export const runtime = "nodejs";
 
@@ -19,5 +21,16 @@ export async function POST(req: Request) {
   }
 
   await setSessionCookie(user.id);
+
+  // Fire-and-forget verification email. If Resend isn't configured yet (dev
+  // before the key is added), log and move on so signup still works.
+  try {
+    const token = await createVerificationToken(user.id);
+    const url = buildAbsoluteUrl(req, `/verify-email?token=${token}`);
+    await sendVerificationEmail(user.email, url);
+  } catch (err) {
+    console.warn("[signup] could not send verification email:", (err as Error).message);
+  }
+
   return Response.json({ user: toSessionUser(user) });
 }

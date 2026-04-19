@@ -39,6 +39,16 @@ STRIPE_PRICE_LIFETIME=price_...
 
 # Set after registering a webhook (see below).
 STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Email — required for signup verification and password reset.
+# Sign up at https://resend.com (free, 3k emails/month).
+RESEND_API_KEY=re_...
+
+# Optional — falls back to onboarding@resend.dev.
+# EMAIL_FROM=mintr <hi@yourdomain.com>
+
+# Set in production so email links point at the real site.
+# NEXT_PUBLIC_SITE_URL=https://mintr.app
 ```
 
 ### Stripe setup (one-time)

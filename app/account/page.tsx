@@ -16,6 +16,7 @@ type SessionUser = {
   id: string;
   email: string;
   createdAt: number;
+  emailVerifiedAt?: number | null;
   isPro?: boolean;
   proSince?: number | null;
   proPlan?: Plan | null;
@@ -50,6 +51,7 @@ function AccountInner() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [verifyBanner, setVerifyBanner] = useState<"verifying" | "success" | null>(null);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   useEffect(() => {
     fetch("/api/auth/me", { cache: "no-store" })
@@ -107,6 +109,18 @@ function AccountInner() {
     } catch (err) {
       setError((err as Error).message);
       setLoading(false);
+    }
+  }
+
+  async function resendVerification() {
+    if (resendState === "sending") return;
+    setResendState("sending");
+    try {
+      const res = await fetch("/api/auth/send-verification", { method: "POST" });
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      setResendState("sent");
+    } catch {
+      setResendState("error");
     }
   }
 
@@ -172,6 +186,37 @@ function AccountInner() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Unverified email banner */}
+          {!user.emailVerifiedAt && (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-amber-100">
+                    Verify your email
+                  </p>
+                  <p className="mt-0.5 text-xs text-amber-200/70">
+                    We sent a link to <span className="text-amber-100">{user.email}</span>.
+                    Click it to confirm.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={resendVerification}
+                  disabled={resendState === "sending" || resendState === "sent"}
+                  className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:border-amber-500/70 hover:bg-amber-500/20 disabled:opacity-60"
+                >
+                  {resendState === "sending"
+                    ? "Sending…"
+                    : resendState === "sent"
+                      ? "Sent ✓"
+                      : resendState === "error"
+                        ? "Try again"
+                        : "Resend email"}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Profile */}
           <section className="rounded-xl border border-neutral-900 bg-neutral-950/60 p-6">
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">

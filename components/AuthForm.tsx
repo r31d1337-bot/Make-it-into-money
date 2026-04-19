@@ -90,9 +90,21 @@ export default function AuthForm({ mode }: { mode: Mode }) {
             disabled={loading}
             className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2 text-neutral-100 focus:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-60"
           />
-          {mode === "signup" && (
-            <p className="mt-1 text-xs text-neutral-600">At least 8 characters.</p>
-          )}
+          <div className="mt-1 flex items-center justify-between">
+            {mode === "signup" ? (
+              <p className="text-xs text-neutral-600">At least 8 characters.</p>
+            ) : (
+              <span />
+            )}
+            {mode === "login" && (
+              <Link
+                href="/forgot-password"
+                className="text-xs text-neutral-500 underline decoration-dotted hover:text-neutral-300"
+              >
+                Forgot password?
+              </Link>
+            )}
+          </div>
         </div>
 
         {error && (
