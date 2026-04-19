@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Turn This Into Money",
-  description: "Describe a skill or idea. Get a concrete monetization plan.",
+  title: "minr — make what you know pay",
+  description:
+    "Turn any skill into a monetization plan, and write the resume, cover letter, and interview prep to back it up.",
 };
 
 // Runs before React hydrates — sets `.light` on <html> based on stored

@@ -3,11 +3,12 @@ import { listShares } from "@/lib/store";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
+import Wordmark from "@/components/Wordmark";
 
 export const dynamic = "force-dynamic"; // always fresh — reads the filesystem
 
 export const metadata = {
-  title: "Discover plans · Turn This Into Money",
+  title: "Discover plans · minr",
   description: "Browse recent monetization plans shared by others.",
 };
 
@@ -45,10 +46,8 @@ export default async function DiscoverPage() {
       />
 
       <nav className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="text-sm text-neutral-400 hover:text-white">
-            ← Home
-          </Link>
+        <div className="flex items-center gap-3">
+          <Wordmark />
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">

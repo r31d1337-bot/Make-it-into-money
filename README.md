@@ -1,6 +1,11 @@
-# Turn This Into Money
+# minr
 
-A minimal web app: describe a skill or idea, get a concrete monetization plan streamed from Claude.
+Make what you know pay. A Next.js app that turns any skill into:
+
+- A monetization plan (streamed from Claude with real market data via web search)
+- A one-page ATS-friendly resume
+- A three-paragraph cover letter
+- A tactical interview-prep guide tailored to any job posting
 
 Stack: Next.js 15 (App Router) · React 19 · Tailwind CSS 4 · `@anthropic-ai/sdk` with streaming.
 

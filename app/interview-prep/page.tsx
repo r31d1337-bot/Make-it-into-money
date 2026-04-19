@@ -6,6 +6,7 @@ import PlanMarkdown from "@/components/PlanMarkdown";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
+import Wordmark from "@/components/Wordmark";
 import { Input, Textarea } from "@/components/FormFields";
 
 type Form = {
@@ -109,10 +110,8 @@ export default function InterviewPrepPage() {
       />
 
       <div className="no-print mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="text-sm text-neutral-400 hover:text-white">
-            ← Home
-          </Link>
+        <div className="flex items-center gap-3">
+          <Wordmark />
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">

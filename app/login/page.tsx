@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import AuthForm from "@/components/AuthForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import Wordmark from "@/components/Wordmark";
 
-export const metadata = { title: "Sign in · Turn This Into Money" };
+export const metadata = { title: "Sign in · minr" };
 
 export default function LoginPage() {
   return (
@@ -14,9 +14,7 @@ export default function LoginPage() {
       />
 
       <nav className="mb-12 flex items-center justify-between">
-        <Link href="/" className="text-sm text-neutral-400 hover:text-white">
-          ← Home
-        </Link>
+        <Wordmark />
         <ThemeToggle />
       </nav>
 

@@ -4,6 +4,7 @@ import PlanMarkdown from "@/components/PlanMarkdown";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
+import Wordmark from "@/components/Wordmark";
 import { loadShare } from "@/lib/store";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -11,7 +12,7 @@ type PageProps = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const plan = await loadShare(id).catch(() => null);
-  if (!plan) return { title: "Plan not found · Turn This Into Money" };
+  if (!plan) return { title: "Plan not found · minr" };
   const title = `"${plan.idea.slice(0, 80)}" — a monetization plan`;
   return {
     title,
@@ -37,13 +38,8 @@ export default async function SharedPlanPage({ params }: PageProps) {
       />
 
       <nav className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white"
-          >
-            ← Discover
-          </Link>
+        <div className="flex items-center gap-3">
+          <Wordmark />
           <ToolsMenu />
         </div>
         <div className="flex items-center gap-2">

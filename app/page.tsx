@@ -10,6 +10,7 @@ import VoiceInput from "@/components/VoiceInput";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
+import Wordmark from "@/components/Wordmark";
 import type { Message, Context } from "@/lib/types";
 
 const EXAMPLES = [
@@ -286,7 +287,8 @@ function Home() {
 
       {/* Top bar */}
       <div className="no-print mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <Wordmark />
           <ToolsMenu />
           <button
             type="button"
