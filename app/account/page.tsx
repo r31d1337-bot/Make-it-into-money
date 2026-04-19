@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
@@ -34,10 +34,20 @@ const LABELS: Record<Plan, string> = {
 };
 
 export default function AccountPage() {
+  return (
+    <Suspense fallback={null}>
+      <AccountInner />
+    </Suspense>
+  );
+}
+
+function AccountInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [verifyBanner, setVerifyBanner] = useState<"verifying" | "success" | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me", { cache: "no-store" })
@@ -45,6 +55,38 @@ export default function AccountPage() {
       .then((data) => setUser(data.user ?? null))
       .catch(() => setUser(null));
   }, []);
+
+  // Auto-verify a fresh checkout on return from Stripe. Idempotent — safe if
+  // the webhook already flipped isPro, since setUserPro just overwrites.
+  useEffect(() => {
+    const paid = searchParams.get("paid");
+    const sessionId = searchParams.get("session_id");
+    if (paid !== "1" || !sessionId) return;
+
+    setVerifyBanner("verifying");
+    fetch("/api/stripe/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    })
+      .then((r) => r.json().catch(() => ({})))
+      .then((data) => {
+        if (data?.user) {
+          setUser(data.user);
+          setVerifyBanner("success");
+          // Strip the query string so refreshing doesn't re-verify.
+          router.replace("/account");
+        } else if (data?.error) {
+          setError(data.error);
+          setVerifyBanner(null);
+        }
+      })
+      .catch((err) => {
+        setError((err as Error).message);
+        setVerifyBanner(null);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   async function upgradeTo(plan: Plan) {
     setLoading(true);
@@ -101,6 +143,17 @@ export default function AccountPage() {
       </div>
 
       <h1 className="mb-8 text-3xl font-semibold tracking-tight">Account</h1>
+
+      {verifyBanner === "verifying" && (
+        <div className="mb-6 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3 text-sm text-neutral-300">
+          Verifying your payment with Stripe…
+        </div>
+      )}
+      {verifyBanner === "success" && (
+        <div className="mb-6 rounded-lg border border-purple-500/40 bg-purple-500/10 px-4 py-3 text-sm text-purple-100">
+          🎉 Payment confirmed — you&apos;re on Pro. Welcome aboard.
+        </div>
+      )}
 
       {user === undefined ? (
         <div className="text-sm text-neutral-500">Loading...</div>
