@@ -13,10 +13,12 @@ export type User = {
   email: string;
   passwordHash: string; // "salt:hex-derived-key"
   createdAt: number;
+  isPro?: boolean;
+  proSince?: number | null;
 };
 
 // Public shape — never leak passwordHash to clients.
-export type SessionUser = Pick<User, "id" | "email" | "createdAt">;
+export type SessionUser = Pick<User, "id" | "email" | "createdAt" | "isPro" | "proSince">;
 
 export const SESSION_COOKIE = "money.session";
 const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -33,7 +35,40 @@ function getSecret(): string {
 }
 
 export function toSessionUser(u: User): SessionUser {
-  return { id: u.id, email: u.email, createdAt: u.createdAt };
+  return {
+    id: u.id,
+    email: u.email,
+    createdAt: u.createdAt,
+    isPro: !!u.isPro,
+    proSince: u.proSince ?? null,
+  };
+}
+
+export async function setUserPro(userId: string, isPro: boolean): Promise<User | null> {
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return null;
+  users[idx] = {
+    ...users[idx],
+    isPro,
+    proSince: isPro ? users[idx].proSince ?? Date.now() : null,
+  };
+  await saveUsers(users);
+  return users[idx];
+}
+
+export async function requirePro(): Promise<
+  { ok: true; user: User } | { ok: false; status: 401 | 402; message: string }
+> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, status: 401, message: "Sign in to use this feature." };
+  if (!user.isPro)
+    return {
+      ok: false,
+      status: 402,
+      message: "This feature is Pro-only. Upgrade to unlock it.",
+    };
+  return { ok: true, user };
 }
 
 // ── User store ─────────────────────────────────────────────────────────────

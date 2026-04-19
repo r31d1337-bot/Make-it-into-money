@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type SessionUser = { id: string; email: string; createdAt: number };
+type SessionUser = { id: string; email: string; createdAt: number; isPro?: boolean };
 
 /**
  * Header widget: "Sign in / Sign up" when logged out, or email + "Log out"
@@ -86,6 +86,11 @@ export default function AuthBar() {
           {initial}
         </span>
         <span className="hidden max-w-[140px] truncate sm:inline">{user.email}</span>
+        {user.isPro && (
+          <span className="rounded bg-gradient-to-r from-purple-400 to-purple-600 px-1 text-[9px] font-semibold uppercase tracking-wider text-white">
+            Pro
+          </span>
+        )}
       </button>
 
       {menuOpen && (
@@ -101,8 +106,34 @@ export default function AuthBar() {
           >
             <div className="px-3 py-2 text-xs text-neutral-500">
               Signed in as
-              <div className="mt-0.5 truncate text-neutral-200">{user.email}</div>
+              <div className="mt-0.5 flex items-center gap-1.5 truncate text-neutral-200">
+                <span className="truncate">{user.email}</span>
+                {user.isPro && (
+                  <span className="rounded bg-gradient-to-r from-purple-400 to-purple-600 px-1 text-[9px] font-semibold uppercase tracking-wider text-white">
+                    Pro
+                  </span>
+                )}
+              </div>
             </div>
+            <div className="my-1 h-px bg-neutral-900" />
+            <Link
+              href="/account"
+              role="menuitem"
+              className="block rounded px-3 py-1.5 text-left text-sm text-neutral-300 hover:bg-neutral-900 hover:text-white"
+              onClick={() => setMenuOpen(false)}
+            >
+              Account
+            </Link>
+            {!user.isPro && (
+              <Link
+                href="/pricing"
+                role="menuitem"
+                className="block rounded px-3 py-1.5 text-left text-sm text-purple-300 hover:bg-neutral-900 hover:text-purple-200"
+                onClick={() => setMenuOpen(false)}
+              >
+                Upgrade to Pro
+              </Link>
+            )}
             <div className="my-1 h-px bg-neutral-900" />
             <button
               type="button"

@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { requirePro } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -56,6 +57,9 @@ function buildUserMessage(body: Body): string {
 }
 
 export async function POST(req: Request) {
+  const gate = await requirePro();
+  if (!gate.ok) return new Response(gate.message, { status: gate.status });
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new Response("Missing ANTHROPIC_API_KEY on the server.", { status: 500 });
@@ -81,7 +85,8 @@ export async function POST(req: Request) {
       const encoder = new TextEncoder();
       try {
         const messageStream = client.messages.stream({
-          model: "claude-sonnet-4-6",
+          // Pro-tier: Opus 4.7 for sharper tone and tighter tailoring.
+          model: "claude-opus-4-7",
           max_tokens: 2000,
           system: SYSTEM_PROMPT,
           messages: [{ role: "user", content: userMessage }],

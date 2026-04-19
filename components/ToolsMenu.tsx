@@ -4,25 +4,38 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const TOOLS = [
-  { href: "/", label: "Monetize an idea", desc: "Get a plan to make money from a skill" },
-  { href: "/resume", label: "Write my resume", desc: "One-page ATS-friendly resume" },
-  { href: "/cover-letter", label: "Cover letter", desc: "Tight three-paragraph letter" },
-  { href: "/interview-prep", label: "Interview prep", desc: "Questions + tactical prep" },
-  { href: "/discover", label: "Discover", desc: "Plans shared by others" },
+type Tool = {
+  href: string;
+  label: string;
+  desc: string;
+  pro?: boolean;
+};
+
+const TOOLS: Tool[] = [
+  { href: "/", label: "Monetize an idea", desc: "Turn any skill into a plan · free" },
+  { href: "/resume", label: "Write my resume", desc: "One-page ATS-friendly resume", pro: true },
+  { href: "/cover-letter", label: "Cover letter", desc: "Tight three-paragraph letter", pro: true },
+  { href: "/interview-prep", label: "Interview prep", desc: "Tailored questions + prep", pro: true },
+  { href: "/discover", label: "Discover", desc: "Plans shared by others · free" },
+  { href: "/pricing", label: "Pricing", desc: "Free vs Pro" },
 ];
 
 export default function ToolsMenu() {
   const [open, setOpen] = useState(false);
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Close on route change.
+  useEffect(() => setOpen(false), [pathname]);
+
+  // Read Pro status so we can show/hide lock icons. Cheap and cached.
   useEffect(() => {
-    setOpen(false);
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { user: null }))
+      .then((data) => setIsPro(!!data?.user?.isPro))
+      .catch(() => setIsPro(false));
   }, [pathname]);
 
-  // Close on outside click or Escape.
   useEffect(() => {
     if (!open) return;
     function onDown(e: MouseEvent) {
@@ -41,8 +54,8 @@ export default function ToolsMenu() {
     };
   }, [open]);
 
-  const currentLabel =
-    TOOLS.find((t) => t.href === pathname)?.label.split(" ")[0] ?? "Tools";
+  const current = TOOLS.find((t) => t.href === pathname);
+  const currentLabel = current?.label.split(" ")[0] ?? "Tools";
 
   return (
     <div ref={menuRef} className="relative">
@@ -77,24 +90,61 @@ export default function ToolsMenu() {
         >
           {TOOLS.map((t) => {
             const active = t.href === pathname;
+            const locked = !!t.pro && isPro === false;
             return (
               <Link
                 key={t.href}
                 href={t.href}
                 role="menuitem"
-                className={`block rounded px-3 py-2 transition ${
+                className={`flex items-start justify-between gap-2 rounded px-3 py-2 transition ${
                   active
                     ? "bg-neutral-900 text-white"
                     : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
                 }`}
               >
-                <div className="text-sm font-medium">{t.label}</div>
-                <div className="text-xs text-neutral-500">{t.desc}</div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 text-sm font-medium">
+                    {t.label}
+                    {t.pro && (
+                      <span
+                        className={`rounded px-1 text-[9px] font-semibold uppercase tracking-wider ${
+                          isPro
+                            ? "bg-purple-500/20 text-purple-200"
+                            : "bg-neutral-900 text-neutral-500"
+                        }`}
+                      >
+                        Pro
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-neutral-500">{t.desc}</div>
+                </div>
+                {locked && <LockIcon />}
               </Link>
             );
           })}
         </div>
       )}
     </div>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg
+      className="mt-0.5 flex-none text-neutral-600"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   );
 }

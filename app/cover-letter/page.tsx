@@ -7,6 +7,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
+import ProGate from "@/components/ProGate";
 import { Input, Textarea } from "@/components/FormFields";
 
 type Form = {
@@ -133,6 +134,7 @@ export default function CoverLetterPage() {
         </div>
       </div>
 
+      <ProGate feature="the cover letter writer">
       {!output && !loading ? (
         <>
           <header className="mb-10 no-print">
@@ -272,9 +274,10 @@ export default function CoverLetterPage() {
           {error}
         </div>
       )}
+      </ProGate>
 
       <footer className="mt-24 text-center text-xs text-neutral-600 no-print">
-        Powered by Claude Sonnet 4.6. Edit before sending.
+        Powered by Claude Opus 4.7. Edit before sending.
       </footer>
     </main>
   );
