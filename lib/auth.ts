@@ -20,12 +20,23 @@ export type User = {
   proPlan?: ProPlan | null;
   /** Epoch ms; null = lifetime / no expiry. */
   proExpiresAt?: number | null;
+  /** Stripe customer ID (cus_...). Set when a checkout session starts. */
+  stripeCustomerId?: string | null;
+  /** Stripe subscription ID (sub_...) for monthly/yearly. Null for lifetime. */
+  stripeSubscriptionId?: string | null;
 };
 
 // Public shape — never leak passwordHash to clients.
 export type SessionUser = Pick<
   User,
-  "id" | "email" | "createdAt" | "isPro" | "proSince" | "proPlan" | "proExpiresAt"
+  | "id"
+  | "email"
+  | "createdAt"
+  | "isPro"
+  | "proSince"
+  | "proPlan"
+  | "proExpiresAt"
+  | "stripeCustomerId"
 >;
 
 export const PLAN_DURATIONS_MS: Record<ProPlan, number | null> = {
@@ -63,6 +74,7 @@ export function toSessionUser(u: User): SessionUser {
     proSince: u.proSince ?? null,
     proPlan: u.proPlan ?? null,
     proExpiresAt: u.proExpiresAt ?? null,
+    stripeCustomerId: u.stripeCustomerId ?? null,
   };
 }
 
@@ -76,6 +88,11 @@ export function toSessionUser(u: User): SessionUser {
 export async function setUserPro(
   userId: string,
   plan: ProPlan | null,
+  opts?: {
+    subscriptionId?: string | null;
+    /** Explicit expiry epoch ms, overrides duration lookup. */
+    expiresAt?: number | null;
+  },
 ): Promise<User | null> {
   const users = await loadUsers();
   const idx = users.findIndex((u) => u.id === userId);
@@ -88,15 +105,23 @@ export async function setUserPro(
       proSince: null,
       proPlan: null,
       proExpiresAt: null,
+      stripeSubscriptionId: null,
     };
   } else {
     const durationMs = PLAN_DURATIONS_MS[plan];
+    const computedExpiry =
+      durationMs == null ? null : now + durationMs;
     users[idx] = {
       ...users[idx],
       isPro: true,
       proSince: users[idx].proSince ?? now,
       proPlan: plan,
-      proExpiresAt: durationMs == null ? null : now + durationMs,
+      proExpiresAt:
+        opts?.expiresAt !== undefined ? opts.expiresAt : computedExpiry,
+      stripeSubscriptionId:
+        opts?.subscriptionId !== undefined
+          ? opts.subscriptionId
+          : users[idx].stripeSubscriptionId ?? null,
     };
   }
   await saveUsers(users);
@@ -153,6 +178,25 @@ async function loadUsers(): Promise<User[]> {
 async function saveUsers(users: User[]): Promise<void> {
   await ensureDir();
   await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), "utf8");
+}
+
+export async function setStripeCustomer(
+  userId: string,
+  stripeCustomerId: string,
+): Promise<User | null> {
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return null;
+  users[idx] = { ...users[idx], stripeCustomerId };
+  await saveUsers(users);
+  return users[idx];
+}
+
+export async function findUserByStripeCustomerId(
+  stripeCustomerId: string,
+): Promise<User | null> {
+  const users = await loadUsers();
+  return users.find((u) => u.stripeCustomerId === stripeCustomerId) ?? null;
 }
 
 // ── Password hashing (scrypt, no deps) ─────────────────────────────────────

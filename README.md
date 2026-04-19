@@ -14,11 +14,48 @@ Stack: Next.js 15 (App Router) · React 19 · Tailwind CSS 4 · `@anthropic-ai/s
 ```sh
 npm install
 cp .env.local.example .env.local
-# edit .env.local and set ANTHROPIC_API_KEY
+# edit .env.local and set ANTHROPIC_API_KEY (+ Stripe keys below)
 npm run dev
 ```
 
 Open http://localhost:3000.
+
+### Env vars
+
+```
+# Required for the free Turn-This-Into-Money tool
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Required for Pro billing (Stripe). Use sk_test_ / pk_test_ during development.
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# Set these after creating 3 Prices in Stripe dashboard → Products
+# (Monthly recurring $7.99, Yearly recurring $79, Lifetime one-time $249).
+# Price IDs are public-safe (start with price_). Add them to .env.local.
+STRIPE_PRICE_MONTHLY=price_...
+STRIPE_PRICE_YEARLY=price_...
+STRIPE_PRICE_LIFETIME=price_...
+
+# Set after registering a webhook (see below).
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Stripe setup (one-time)
+
+1. **API keys:** Stripe dashboard → **Developers → API keys** → copy the Secret and Publishable keys. Use **Test mode** while developing.
+2. **Products:** Stripe dashboard → **Products → Add product** — create three:
+   - *mintr Pro Monthly*: Recurring, $7.99/month
+   - *mintr Pro Yearly*: Recurring, $79/year
+   - *mintr Pro Lifetime*: One-time, $249
+3. Click each product, copy the **price_...** ID from the pricing section, paste into `.env.local` as `STRIPE_PRICE_{MONTHLY,YEARLY,LIFETIME}`.
+4. **Webhook (local dev):** `brew install stripe/stripe-cli/stripe`, then:
+   ```sh
+   stripe login
+   stripe listen --forward-to localhost:3000/api/stripe/webhook
+   ```
+   The CLI prints a `whsec_...` signing secret — copy it into `STRIPE_WEBHOOK_SECRET`.
+5. **Webhook (production):** Stripe dashboard → **Developers → Webhooks → Add endpoint** → `https://your-domain.com/api/stripe/webhook` → select events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`. Copy the signing secret into your Vercel env vars.
 
 ## Deploy (Vercel)
 

@@ -57,18 +57,19 @@ export default function PricingPage() {
     setSubmitting(plan);
     setError(null);
     try {
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || `Upgrade failed (${res.status})`);
-      setUser(data.user);
-      router.refresh();
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || `Checkout failed (${res.status})`);
+      }
+      // Hand off to Stripe's hosted checkout.
+      window.location.href = data.url;
     } catch (err) {
       setError((err as Error).message);
-    } finally {
       setSubmitting(null);
     }
   }
@@ -225,8 +226,7 @@ export default function PricingPage() {
           </div>
         </dl>
         <p className="mt-10 text-center text-xs text-neutral-600">
-          Heads up: billing is currently in dev mode. Upgrade buttons flip your Pro
-          flag instantly for testing — real Stripe checkout coming before launch.
+          Secure checkout by Stripe. Cancel anytime from your Account page.
         </p>
       </section>
     </main>

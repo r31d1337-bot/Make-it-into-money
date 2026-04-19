@@ -18,6 +18,7 @@ type SessionUser = {
   proSince?: number | null;
   proPlan?: Plan | null;
   proExpiresAt?: number | null;
+  stripeCustomerId?: string | null;
 };
 
 const PRICES: Record<Plan, string> = {
@@ -45,22 +46,38 @@ export default function AccountPage() {
       .catch(() => setUser(null));
   }, []);
 
-  async function hit(endpoint: "/api/subscribe" | "/api/unsubscribe", plan?: Plan) {
+  async function upgradeTo(plan: Plan) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: plan ? JSON.stringify({ plan }) : undefined,
+        body: JSON.stringify({ plan }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
-      setUser(data.user);
-      router.refresh();
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || `Checkout failed (${res.status})`);
+      }
+      window.location.href = data.url;
     } catch (err) {
       setError((err as Error).message);
-    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function manageBilling() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || `Portal failed (${res.status})`);
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setError((err as Error).message);
       setLoading(false);
     }
   }
@@ -179,7 +196,7 @@ export default function AccountPage() {
                       {user.proPlan !== "yearly" && (
                         <button
                           type="button"
-                          onClick={() => hit("/api/subscribe", "yearly")}
+                          onClick={() => upgradeTo("yearly")}
                           disabled={loading}
                           className="rounded-lg border border-purple-500/40 bg-purple-500/10 px-4 py-2 text-sm text-purple-200 hover:border-purple-500/70 hover:bg-purple-500/20 disabled:opacity-60"
                         >
@@ -188,20 +205,22 @@ export default function AccountPage() {
                       )}
                       <button
                         type="button"
-                        onClick={() => hit("/api/subscribe", "lifetime")}
+                        onClick={() => upgradeTo("lifetime")}
                         disabled={loading}
                         className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200 hover:border-amber-500/70 hover:bg-amber-500/20 disabled:opacity-60"
                       >
                         Upgrade to lifetime
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => hit("/api/unsubscribe")}
-                        disabled={loading}
-                        className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-red-900 hover:text-red-300 disabled:opacity-60"
-                      >
-                        Cancel subscription
-                      </button>
+                      {user.stripeCustomerId && (
+                        <button
+                          type="button"
+                          onClick={manageBilling}
+                          disabled={loading}
+                          className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white disabled:opacity-60"
+                        >
+                          Manage billing (Stripe)
+                        </button>
+                      )}
                     </>
                   )}
                   {user.proPlan === "lifetime" && (
@@ -232,8 +251,8 @@ export default function AccountPage() {
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
 
             <p className="mt-6 text-xs text-neutral-600">
-              Billing is in dev mode — clicks flip the Pro flag directly. Real Stripe
-              checkout will replace this before launch.
+              Billing is handled by Stripe. &ldquo;Manage billing&rdquo; opens the Stripe
+              customer portal where you can cancel, change payment method, or update card.
             </p>
           </section>
         </div>
