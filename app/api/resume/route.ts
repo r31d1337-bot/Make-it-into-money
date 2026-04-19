@@ -48,7 +48,13 @@ type Body = {
   education?: string;
   skills?: string;
   contact?: string;
+  /** Pro-only: choose the underlying Claude model. Defaults to Opus 4.7. */
+  model?: "opus" | "sonnet";
 };
+
+function resolveModel(choice: Body["model"]): "claude-opus-4-7" | "claude-sonnet-4-6" {
+  return choice === "sonnet" ? "claude-sonnet-4-6" : "claude-opus-4-7";
+}
 
 function buildUserMessage(body: Body): string {
   const parts: string[] = [];
@@ -88,8 +94,8 @@ export async function POST(req: Request) {
       const encoder = new TextEncoder();
       try {
         const messageStream = client.messages.stream({
-          // Pro-tier: use Opus 4.7 for sharper career outputs.
-          model: "claude-opus-4-7",
+          // Pro-tier: Opus 4.7 by default, Sonnet 4.6 if the user chose speed.
+          model: resolveModel(body.model),
           max_tokens: 4000,
           system: SYSTEM_PROMPT,
           messages: [{ role: "user", content: userMessage }],

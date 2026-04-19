@@ -47,7 +47,12 @@ type Body = {
   jobDescription?: string;
   companyName?: string;
   background?: string;
+  model?: "opus" | "sonnet";
 };
+
+function resolveModel(choice: Body["model"]): "claude-opus-4-7" | "claude-sonnet-4-6" {
+  return choice === "sonnet" ? "claude-sonnet-4-6" : "claude-opus-4-7";
+}
 
 function buildUserMessage(body: Body): string {
   const parts: string[] = [];
@@ -90,9 +95,8 @@ export async function POST(req: Request) {
       const encoder = new TextEncoder();
       try {
         const messageStream = client.messages.stream({
-          // Pro-tier: Opus 4.7 benefits most here — synthesizing the posting
-          // and tailoring 8 questions is genuinely harder reasoning work.
-          model: "claude-opus-4-7",
+          // Pro-tier: Opus 4.7 by default. Sonnet 4.6 if the user chose speed.
+          model: resolveModel(body.model),
           max_tokens: 5000,
           system: SYSTEM_PROMPT,
           messages: [{ role: "user", content: userMessage }],
