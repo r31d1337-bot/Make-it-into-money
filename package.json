@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "env -u ANTHROPIC_API_KEY -u ANTHROPIC_BASE_URL next dev",
+    "dev": "env -u ANTHROPIC_API_KEY -u ANTHROPIC_BASE_URL next dev --experimental-https --experimental-https-key ./.certs/mintrapp.com-key.pem --experimental-https-cert ./.certs/mintrapp.com.pem",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
