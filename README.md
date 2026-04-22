@@ -48,7 +48,7 @@ RESEND_API_KEY=re_...
 # EMAIL_FROM=mintr <hi@yourdomain.com>
 
 # Set in production so email links point at the real site.
-# NEXT_PUBLIC_SITE_URL=https://mintr.app
+# NEXT_PUBLIC_SITE_URL=https://mintrapp.com
 ```
 
 ### Stripe setup (one-time)

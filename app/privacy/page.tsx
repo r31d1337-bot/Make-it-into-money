@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         <p>
           This Privacy Policy explains what information mintr collects, how we use
           it, and the choices you have. If you have questions, email{" "}
-          <a href="mailto:support@mintr.app">support@mintr.app</a>.
+          <a href="mailto:support@mintrapp.com">support@mintrapp.com</a>.
         </p>
 
         <h2>1. What we collect</h2>
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
           <li>Request deletion of your account and associated data.</li>
         </ul>
         <p>
-          Email <a href="mailto:support@mintr.app">support@mintr.app</a> to make
+          Email <a href="mailto:support@mintrapp.com">support@mintrapp.com</a> to make
           a request. Depending on where you live, you may have additional rights
           under GDPR, CCPA, or similar laws.
         </p>
@@ -164,7 +164,7 @@ export default function PrivacyPage() {
         <h2>10. Contact</h2>
         <p>
           Questions or requests? Email{" "}
-          <a href="mailto:support@mintr.app">support@mintr.app</a>.
+          <a href="mailto:support@mintrapp.com">support@mintrapp.com</a>.
         </p>
 
         <hr />
