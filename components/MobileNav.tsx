@@ -32,6 +32,7 @@ const NAV_GROUPS: Array<{
     items: [
       { href: "/discover", label: "Discover" },
       { href: "/pricing", label: "Pricing" },
+      { href: "/support", label: "Support" },
     ],
   },
 ];

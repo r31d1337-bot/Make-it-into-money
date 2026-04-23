@@ -197,7 +197,7 @@ export default function TermsPage() {
         <h2>18. Contact</h2>
         <p>
           Questions about these Terms? Email{" "}
-          <a href="mailto:support@mintrapp.com">support@mintrapp.com</a>.
+          <a href="mailto:team@adroitventures.io">team@adroitventures.io</a>.
         </p>
 
         <hr />

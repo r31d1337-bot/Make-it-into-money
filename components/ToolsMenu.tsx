@@ -19,6 +19,7 @@ const TOOLS: Tool[] = [
   { href: "/interview-prep", label: "Interview prep", desc: "Tailored questions + prep", pro: true },
   { href: "/discover", label: "Discover", desc: "Plans shared by others · free" },
   { href: "/pricing", label: "Pricing", desc: "Free vs Pro" },
+  { href: "/support", label: "Support", desc: "Contact us · FAQ" },
 ];
 
 export default function ToolsMenu() {
