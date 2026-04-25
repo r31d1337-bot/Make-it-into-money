@@ -26,6 +26,12 @@ export type User = {
   stripeCustomerId?: string | null;
   /** Stripe subscription ID (sub_...) for monthly/yearly. Null for lifetime. */
   stripeSubscriptionId?: string | null;
+  /**
+   * True if the user has scheduled their subscription to cancel at the end
+   * of the current paid period. They still have Pro access until proExpiresAt.
+   * Synced from Stripe via the customer.subscription.updated webhook.
+   */
+  cancelAtPeriodEnd?: boolean | null;
 };
 
 // Public shape — never leak passwordHash to clients.
@@ -40,6 +46,7 @@ export type SessionUser = Pick<
   | "proPlan"
   | "proExpiresAt"
   | "stripeCustomerId"
+  | "cancelAtPeriodEnd"
 >;
 
 export const PLAN_DURATIONS_MS: Record<ProPlan, number | null> = {
@@ -79,7 +86,21 @@ export function toSessionUser(u: User): SessionUser {
     proPlan: u.proPlan ?? null,
     proExpiresAt: u.proExpiresAt ?? null,
     stripeCustomerId: u.stripeCustomerId ?? null,
+    cancelAtPeriodEnd: u.cancelAtPeriodEnd ?? null,
   };
+}
+
+/** Mark the user's subscription as scheduled-to-cancel (or undo). */
+export async function setSubscriptionCancelState(
+  userId: string,
+  cancelAtPeriodEnd: boolean,
+): Promise<User | null> {
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return null;
+  users[idx] = { ...users[idx], cancelAtPeriodEnd };
+  await saveUsers(users);
+  return users[idx];
 }
 
 /**

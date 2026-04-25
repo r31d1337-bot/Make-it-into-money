@@ -22,6 +22,7 @@ type SessionUser = {
   proPlan?: Plan | null;
   proExpiresAt?: number | null;
   stripeCustomerId?: string | null;
+  cancelAtPeriodEnd?: boolean | null;
 };
 
 const PRICES: Record<Plan, string> = {
@@ -121,6 +122,41 @@ function AccountInner() {
       setResendState("sent");
     } catch {
       setResendState("error");
+    }
+  }
+
+  async function cancelSubscription() {
+    if (!confirm(
+      "Cancel your subscription? You'll keep Pro access until the end of your current paid period, then drop to free.",
+    )) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/cancel", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || `Cancel failed (${res.status})`);
+      setUser(data.user);
+      router.refresh();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function reactivateSubscription() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/reactivate", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || `Reactivate failed (${res.status})`);
+      setUser(data.user);
+      router.refresh();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -282,19 +318,34 @@ function AccountInner() {
                   ) : user.proExpiresAt ? (
                     <div className="flex justify-between">
                       <dt className="text-neutral-500">
-                        {user.proPlan === "monthly" ? "Renews on" : "Renews on"}
+                        {user.cancelAtPeriodEnd ? "Ends on" : "Renews on"}
                       </dt>
-                      <dd className="text-neutral-200">
+                      <dd className={user.cancelAtPeriodEnd ? "text-amber-200" : "text-neutral-200"}>
                         {new Date(user.proExpiresAt).toLocaleDateString()}
                       </dd>
                     </div>
                   ) : null}
                 </dl>
 
+                {/* Scheduled-cancel banner */}
+                {user.cancelAtPeriodEnd && user.proExpiresAt && (
+                  <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-100">
+                    Cancellation scheduled. You&apos;ll keep Pro until{" "}
+                    <strong>
+                      {new Date(user.proExpiresAt).toLocaleDateString(undefined, {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </strong>
+                    , then drop to free.
+                  </div>
+                )}
+
                 <div className="mt-5 flex flex-wrap gap-2">
                   {user.proPlan !== "lifetime" && (
                     <>
-                      {user.proPlan !== "yearly" && (
+                      {!user.cancelAtPeriodEnd && user.proPlan !== "yearly" && (
                         <button
                           type="button"
                           onClick={() => upgradeTo("yearly")}
@@ -304,22 +355,43 @@ function AccountInner() {
                           Switch to yearly · save 17%
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => upgradeTo("lifetime")}
-                        disabled={loading}
-                        className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200 hover:border-amber-500/70 hover:bg-amber-500/20 disabled:opacity-60"
-                      >
-                        Upgrade to lifetime
-                      </button>
+                      {!user.cancelAtPeriodEnd && (
+                        <button
+                          type="button"
+                          onClick={() => upgradeTo("lifetime")}
+                          disabled={loading}
+                          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-200 hover:border-amber-500/70 hover:bg-amber-500/20 disabled:opacity-60"
+                        >
+                          Upgrade to lifetime
+                        </button>
+                      )}
+                      {user.cancelAtPeriodEnd ? (
+                        <button
+                          type="button"
+                          onClick={reactivateSubscription}
+                          disabled={loading}
+                          className="rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 hover:brightness-110 disabled:opacity-60"
+                        >
+                          {loading ? "Working…" : "Resume subscription"}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={cancelSubscription}
+                          disabled={loading}
+                          className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-red-900 hover:text-red-300 disabled:opacity-60"
+                        >
+                          {loading ? "Working…" : "Cancel subscription"}
+                        </button>
+                      )}
                       {user.stripeCustomerId && (
                         <button
                           type="button"
                           onClick={manageBilling}
                           disabled={loading}
-                          className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-300 hover:border-neutral-700 hover:text-white disabled:opacity-60"
+                          className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-sm text-neutral-400 hover:border-neutral-700 hover:text-white disabled:opacity-60"
                         >
-                          Manage billing (Stripe)
+                          Manage payment method
                         </button>
                       )}
                     </>

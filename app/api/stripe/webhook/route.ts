@@ -3,6 +3,7 @@ import {
   findUserById,
   findUserByStripeCustomerId,
   setStripeCustomer,
+  setSubscriptionCancelState,
   setUserPro,
   type ProPlan,
 } from "@/lib/auth";
@@ -144,6 +145,9 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
     subscriptionId: sub.id,
     expiresAt,
   });
+  // Mirror Stripe's cancel_at_period_end so the in-app UI stays accurate
+  // whether the cancel happened from /account or directly in Stripe's portal.
+  await setSubscriptionCancelState(user.id, !!sub.cancel_at_period_end);
 }
 
 async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
