@@ -53,20 +53,34 @@ export async function POST(req: Request) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         await handleCheckoutCompleted(session, stripe);
+        console.log(
+          `[stripe webhook] ${event.type} → user=${
+            session.metadata?.appUserId ?? "?"
+          } plan=${session.metadata?.plan ?? "?"} ✓`,
+        );
         break;
       }
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
         await handleSubscriptionUpdated(sub);
+        console.log(
+          `[stripe webhook] ${event.type} → sub=${sub.id} status=${sub.status}` +
+            (sub.cancel_at_period_end ? " (canceling)" : "") +
+            " ✓",
+        );
         break;
       }
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
         await handleSubscriptionDeleted(sub);
+        console.log(
+          `[stripe webhook] ${event.type} → sub=${sub.id} (Pro revoked) ✓`,
+        );
         break;
       }
       default:
         // Ignore events we don't care about. Still 200 so Stripe doesn't retry.
+        console.log(`[stripe webhook] ${event.type} (ignored)`);
         break;
     }
   } catch (err) {
