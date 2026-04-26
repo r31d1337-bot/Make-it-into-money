@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ResetPasswordClient from "./ResetPasswordClient";
-import ThemeToggle from "@/components/ThemeToggle";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import Wordmark from "@/components/Wordmark";
 import MobileNav from "@/components/MobileNav";
@@ -18,7 +17,6 @@ export default function ResetPasswordPage() {
         <Wordmark />
         <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />
-          <ThemeToggle />
         </div>
         <MobileNav />
       </nav>

@@ -6,7 +6,7 @@ import { useModelChoice, type ModelChoice } from "./ModelPicker";
 
 /**
  * Compact segmented pill for Pro users to pick Opus vs Sonnet globally.
- * Lives in every page header next to the theme toggle. Free users and
+ * Lives in every page header. Free users and
  * signed-out visitors don't see it at all — they always get Sonnet.
  *
  * Stays in sync with the inline ModelPicker on Pro tool pages via the

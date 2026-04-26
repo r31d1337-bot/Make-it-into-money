@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import PlanMarkdown from "@/components/PlanMarkdown";
 import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
@@ -51,8 +50,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
           >
             Remix this plan →
           </Link>
-          <HeaderModelToggle />          <ThemeToggle />
-          <AuthBar />
+          <HeaderModelToggle />          <AuthBar />
         </div>
         <MobileNav />
       </nav>

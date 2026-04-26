@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
@@ -34,7 +33,6 @@ const FREE_FEATURES = [
   "Unlimited Turn-This-Into-Money plans",
   "Web search for real market data",
   "Shareable plan links · Discover",
-  "Dark / light mode",
   "History on device",
 ];
 
@@ -92,8 +90,7 @@ export default function PricingPage() {
           <ToolsMenu />
         </div>
         <div className="hidden items-center gap-2 sm:flex">
-          <HeaderModelToggle />          <ThemeToggle />
-          <AuthBar />
+          <HeaderModelToggle />          <AuthBar />
         </div>
         <MobileNav />
       </div>

@@ -11,8 +11,6 @@ type SessionUser = {
   isPro?: boolean;
 };
 
-type Theme = "light" | "dark";
-
 const NAV_GROUPS: Array<{
   heading: string;
   items: Array<{ href: string; label: string; pro?: boolean; hint?: string }>;
@@ -39,9 +37,9 @@ const NAV_GROUPS: Array<{
 
 /**
  * Full-screen mobile navigation sheet. Replaces the crowded desktop header
- * controls (ToolsMenu + HeaderModelToggle + ThemeToggle + AuthBar email)
- * with a single hamburger button. Tapping opens a right-side sheet with:
- * nav links, Pro-only model toggle, theme toggle, auth state.
+ * controls (ToolsMenu + HeaderModelToggle + AuthBar email) with a single
+ * hamburger button. Tapping opens a right-side sheet with:
+ * nav links, Pro-only model toggle, auth state.
  *
  * Only rendered via `sm:hidden` — desktop keeps the inline controls.
  */
@@ -50,7 +48,6 @@ export default function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
-  const [theme, setTheme] = useState<Theme | null>(null);
   const [modelChoice, setModelChoice] = useModelChoice();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -68,11 +65,6 @@ export default function MobileNav() {
     };
   }, [open]);
 
-  // Resolve current theme from the <html> class (set by bootstrap script).
-  useEffect(() => {
-    setTheme(document.documentElement.classList.contains("light") ? "light" : "dark");
-  }, []);
-
   // Poll auth on route change.
   useEffect(() => {
     let cancelled = false;
@@ -88,16 +80,6 @@ export default function MobileNav() {
       cancelled = true;
     };
   }, [pathname]);
-
-  function toggleTheme() {
-    const next: Theme = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    if (next === "light") document.documentElement.classList.add("light");
-    else document.documentElement.classList.remove("light");
-    try {
-      localStorage.setItem("money.theme", next);
-    } catch {}
-  }
 
   async function onLogout() {
     if (loggingOut) return;
@@ -202,9 +184,8 @@ export default function MobileNav() {
             </nav>
 
             {/* Settings */}
-            <div className="border-t border-neutral-900 px-5 py-5">
-              {/* Model (Pro only) */}
-              {isPro && (
+            {isPro && (
+              <div className="border-t border-neutral-900 px-5 py-5">
                 <SettingRow label="Model">
                   <SegmentedTwo
                     value={modelChoice}
@@ -213,22 +194,8 @@ export default function MobileNav() {
                     right={{ value: "sonnet", label: "Sonnet" }}
                   />
                 </SettingRow>
-              )}
-
-              {/* Theme */}
-              <SettingRow label="Theme">
-                {theme && (
-                  <SegmentedTwo
-                    value={theme}
-                    onChange={(v) => {
-                      if (v !== theme) toggleTheme();
-                    }}
-                    left={{ value: "dark", label: "Dark" }}
-                    right={{ value: "light", label: "Light" }}
-                  />
-                )}
-              </SettingRow>
-            </div>
+              </div>
+            )}
 
             {/* Auth */}
             <div className="border-t border-neutral-900 px-5 py-5">

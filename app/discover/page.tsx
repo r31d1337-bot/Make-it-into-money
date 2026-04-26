@@ -2,7 +2,6 @@ import Link from "next/link";
 import { listShares } from "@/lib/store";
 import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
@@ -53,8 +52,7 @@ export default async function DiscoverPage() {
           <ToolsMenu />
         </div>
         <div className="hidden items-center gap-2 sm:flex">
-          <HeaderModelToggle />          <ThemeToggle />
-          <AuthBar />
+          <HeaderModelToggle />          <AuthBar />
         </div>
         <MobileNav />
       </nav>

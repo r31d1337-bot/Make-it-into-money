@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import AuthForm from "@/components/AuthForm";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Wordmark from "@/components/Wordmark";
 import MobileNav from "@/components/MobileNav";
 
@@ -19,7 +18,6 @@ export default function SignupPage() {
         <Wordmark />
         <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />
-          <ThemeToggle />
         </div>
         <MobileNav />
       </nav>

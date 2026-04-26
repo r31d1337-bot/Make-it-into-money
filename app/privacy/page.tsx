@@ -1,7 +1,6 @@
 import Link from "next/link";
 import MobileNav from "@/components/MobileNav";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
@@ -24,8 +23,7 @@ export default function PrivacyPage() {
           <ToolsMenu />
         </div>
         <div className="hidden items-center gap-2 sm:flex">
-          <HeaderModelToggle />          <ThemeToggle />
-          <AuthBar />
+          <HeaderModelToggle />          <AuthBar />
         </div>
         <MobileNav />
       </div>
@@ -58,9 +56,9 @@ export default function PrivacyPage() {
             never see or store your card number.
           </li>
           <li>
-            <strong>Device-local data.</strong> Your history sidebar, checklist
-            state, and theme preference are stored in your browser&apos;s
-            localStorage. This data stays on your device and is not sent to us.
+            <strong>Device-local data.</strong> Your history sidebar and
+            checklist state are stored in your browser&apos;s localStorage.
+            This data stays on your device and is not sent to us.
           </li>
           <li>
             <strong>Basic logs.</strong> Standard server logs (IP address,

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import ThemeToggle from "@/components/ThemeToggle";
 import HeaderModelToggle from "@/components/HeaderModelToggle";
 import Wordmark from "@/components/Wordmark";
 import MobileNav from "@/components/MobileNav";
@@ -43,7 +42,6 @@ export default function ForgotPasswordPage() {
         <Wordmark />
         <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />
-          <ThemeToggle />
         </div>
         <MobileNav />
       </nav>

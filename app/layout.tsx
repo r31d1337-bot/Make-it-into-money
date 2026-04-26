@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#07070a",
-  colorScheme: "dark light",
+  colorScheme: "dark",
   // "cover" lets env(safe-area-inset-*) work so notched iPhones don't cut
   // content under the dynamic island or home indicator.
   viewportFit: "cover",
@@ -23,24 +23,9 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// Runs before React hydrates — sets `.light` on <html> based on stored
-// preference or OS preference, so the correct theme paints immediately
-// (no flash of wrong theme).
-const themeBootstrap = `(function() {
-  try {
-    var stored = localStorage.getItem('money.theme');
-    var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-    var isLight = stored ? stored === 'light' : prefersLight;
-    if (isLight) document.documentElement.classList.add('light');
-  } catch (e) {}
-})();`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
-      </head>
       <body className="flex min-h-screen flex-col">
         <div className="flex-1">{children}</div>
         <Footer />
