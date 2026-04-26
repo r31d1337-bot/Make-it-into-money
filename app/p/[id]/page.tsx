@@ -94,7 +94,7 @@ export default async function SharedPlanPage({ params }: PageProps) {
       </div>
 
       <footer className="mt-16 text-center text-xs text-neutral-600">
-        Generated at {new Date(plan.createdAt).toLocaleDateString()} · Powered by Claude Sonnet 4.6
+        Generated at {new Date(plan.createdAt).toLocaleDateString()} · Powered by artificial intelligence
       </footer>
     </main>
   );

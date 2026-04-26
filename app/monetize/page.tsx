@@ -625,7 +625,7 @@ function Home() {
       )}
 
       <footer className="mt-24 text-center text-xs text-neutral-600 no-print">
-        Powered by Claude Sonnet 4.6. Not financial advice.
+        Powered by artificial intelligence. Not financial advice.
       </footer>
     </main>
   );

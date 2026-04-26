@@ -282,7 +282,7 @@ export default function CoverLetterPage() {
       </ProGate>
 
       <footer className="mt-24 text-center text-xs text-neutral-600 no-print">
-        Powered by Claude Opus 4.7. Edit before sending.
+        Powered by artificial intelligence. Edit before sending.
       </footer>
     </main>
   );

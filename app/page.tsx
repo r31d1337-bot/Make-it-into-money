@@ -72,7 +72,7 @@ export default function Landing() {
       <section className="mx-auto max-w-3xl px-6 pb-12 pt-16 text-center sm:pt-24">
         <p className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs uppercase tracking-wider text-purple-200">
           <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-          Powered by Claude Opus 4.7
+          Powered by artificial intelligence
         </p>
         <h1 className="bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-5xl font-semibold leading-[1.05] tracking-tight text-transparent sm:text-7xl">
           Make what you know pay.
