@@ -8,7 +8,7 @@ export const metadata = { title: "Sign up · mintr" };
 
 export default function SignupPage() {
   return (
-    <main className="relative mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-10">
+    <main className="relative mx-auto flex min-h-screen max-w-3xl flex-col px-4 py-6 sm:px-6 sm:py-10">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"

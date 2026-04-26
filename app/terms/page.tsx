@@ -11,7 +11,7 @@ const LAST_UPDATED = "April 2026";
 
 export default function TermsPage() {
   return (
-    <main className="relative mx-auto max-w-3xl px-6 py-10">
+    <main className="relative mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"

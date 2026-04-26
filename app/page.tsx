@@ -4,6 +4,8 @@ import HeaderModelToggle from "@/components/HeaderModelToggle";
 import AuthBar from "@/components/AuthBar";
 import ToolsMenu from "@/components/ToolsMenu";
 import Wordmark from "@/components/Wordmark";
+import MobileHome from "@/components/MobileHome";
+import PwaRedirect from "@/components/PwaRedirect";
 
 const TOOLS = [
   {
@@ -48,7 +50,17 @@ const STEPS = [
 
 export default function Landing() {
   return (
-    <main className="relative">
+    <>
+      {/* Installed-PWA users skip the marketing page entirely. */}
+      <PwaRedirect to="/monetize" />
+
+      {/* Mobile browsers get a tight app-launcher style home. */}
+      <div className="sm:hidden">
+        <MobileHome />
+      </div>
+
+      {/* Desktop / tablet: full marketing landing. */}
+      <main className="relative hidden sm:block">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[720px]"
@@ -63,7 +75,6 @@ export default function Landing() {
         <div className="hidden items-center gap-2 sm:flex">
           <HeaderModelToggle />          <AuthBar />
         </div>
-        <MobileNav />
       </div>
 
       {/* Hero */}
@@ -210,6 +221,7 @@ export default function Landing() {
           Turn it into money →
         </Link>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

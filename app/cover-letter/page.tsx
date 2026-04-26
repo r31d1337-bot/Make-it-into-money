@@ -111,7 +111,7 @@ export default function CoverLetterPage() {
   }
 
   return (
-    <main className="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
+    <main className="relative mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-16">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"

@@ -292,7 +292,7 @@ function Home() {
   }
 
   return (
-    <main className="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
+    <main className="relative mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-16">
       {/* Ambient gradient glow */}
       <div
         aria-hidden

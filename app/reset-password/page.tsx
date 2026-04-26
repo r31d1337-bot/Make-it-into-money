@@ -8,7 +8,7 @@ export const metadata = { title: "Reset password · mintr" };
 
 export default function ResetPasswordPage() {
   return (
-    <main className="relative mx-auto flex min-h-[80vh] max-w-3xl flex-col px-6 py-10">
+    <main className="relative mx-auto flex min-h-[80vh] max-w-3xl flex-col px-4 py-6 sm:px-6 sm:py-10">
       <div
         aria-hidden
         className="ambient-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px]"

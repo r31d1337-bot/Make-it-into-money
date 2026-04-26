@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "mintr",
     description:
       "Turn any skill into a monetization plan, a resume, a cover letter, and tailored interview prep.",
-    start_url: "/",
+    start_url: "/monetize",
     display: "standalone",
     orientation: "portrait",
     background_color: "#07070a",
